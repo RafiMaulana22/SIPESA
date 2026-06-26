@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ResetPasswordController;
@@ -31,3 +32,5 @@ Route::middleware(['guest'])->group(function () {
     // Auth Reset Password
     Route::get('/reset-password', [ResetPasswordController::class, 'index'])->name('auth.reset-password');
 });
+
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('index');

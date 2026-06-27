@@ -4,7 +4,7 @@
              <div class="collapse navbar-collapse justify-content-between">
                  <div class="header-left">
                      <div class="dashboard_bar">
-                         {{ ucwords(trim(str_replace(['_', '.', 'index'], ' ', Route::currentRouteName()))) }}
+                         {{ ucwords(trim(str_replace(['_', '-', '.', 'index'], ' ', Route::currentRouteName()))) }}
                      </div>
                  </div>
                  <ul class="navbar-nav header-right">

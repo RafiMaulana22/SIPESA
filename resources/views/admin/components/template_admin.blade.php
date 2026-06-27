@@ -3,22 +3,22 @@
 
 <head>
     <!-- Title -->
-    <title>Gymove - Fitness Bootstrap Admin Dashboard Template</title>
+    <title> {{ ucwords(trim(str_replace(['_', '-', '.', 'index'], ' ', Route::currentRouteName()))) }} Admin SIPESA </title>
 
     <!-- Meta -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="author" content="DexignZone">
-    <meta name="robots" content="">
+    <meta name="robots" content="SUPERSITESTUDIO">
 
     <meta name="keywords"
         content="admin, admin dashboard, admin template, bootstrap, bootstrap 5, bootstrap 5 admin template, fitness, fitness admin, modern, responsive admin dashboard, sales dashboard, sass, ui kit, web app">
     <meta name="description"
-        content="Discover Gymove, the ultimate fitness solution that is designed to help you achieve a healthier lifestyle with its cutting-edge features and personalized programs. Gymove is a fully mobile-responsive admin dashboard template that provides the perfect blend of exercise, nutrition, and motivation. Begin your fitness journey today with Gymove and visit DexignZone for more information.">
+        content="Discover SIPESA, the ultimate fitness solution that is designed to help you achieve a healthier lifestyle with its cutting-edge features and personalized programs. SIPESA is a fully mobile-responsive admin dashboard template that provides the perfect blend of exercise, nutrition, and motivation. Begin your fitness journey today with SIPESA and visit DexignZone for more information.">
 
-    <meta property="og:title" content="Gymove  - Fitness Bootstrap Admin Dashboard Template">
+    <meta property="og:title" content="SIPESA  - Fitness Bootstrap Admin Dashboard Template">
     <meta property="og:description"
-        content="Discover Gymove, the ultimate fitness solution that is designed to help you achieve a healthier lifestyle with its cutting-edge features and personalized programs. Gymove is a fully mobile-responsive admin dashboard template that provides the perfect blend of exercise, nutrition, and motivation. Begin your fitness journey today with Gymove and visit DexignZone for more information.">
+        content="Discover SIPESA, the ultimate fitness solution that is designed to help you achieve a healthier lifestyle with its cutting-edge features and personalized programs. SIPESA is a fully mobile-responsive admin dashboard template that provides the perfect blend of exercise, nutrition, and motivation. Begin your fitness journey today with SIPESA and visit DexignZone for more information.">
     <meta property="og:image" content="social-image.png">
     <meta name="format-detection" content="telephone=no">
 
@@ -54,7 +54,7 @@
             Nav header start
         ***********************************-->
         <div class="nav-header">
-            <a href="index.html" class="brand-logo" aria-label="Gymove">
+            <a href="index.html" class="brand-logo" aria-label="SIPESA">
                 <img class="logo-abbr" src="{{ asset('xhtml') }}/images/logo.png" alt="">
                 <img class="logo-compact" src="{{ asset('xhtml') }}/images/logo-text.png" alt="">
                 <img class="brand-title" src="{{ asset('xhtml') }}/images/logo-text.png" alt="">

@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\KategoriSuratController;
+use App\Http\Controllers\Admin\PendudukController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ResetPasswordController;
@@ -33,4 +35,11 @@ Route::middleware(['guest'])->group(function () {
     Route::get('/reset-password', [ResetPasswordController::class, 'index'])->name('auth.reset-password');
 });
 
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('index');
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+//penduduk
+Route::resource('penduduk', PendudukController::class);
+
+//KATEGORI SURAT
+Route::resource('kategori-surat', KategoriSuratController::class);
+

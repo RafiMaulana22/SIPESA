@@ -1,5 +1,5 @@
 <ul class="metismenu" id="menu">
-    <li><a class="ai-icon" href="{{ route('index') }}" aria-expanded="false">
+    <li><a class="ai-icon" href="{{ route('dashboard') }}" aria-expanded="false">
             <i class="flaticon-381-networking"></i>
             <span class="nav-text">Dashboard</span>
         </a>
@@ -9,10 +9,10 @@
             <span class="nav-text">Master Data</span>
         </a>
         <ul aria-expanded="false">
-            <li><a href="">Penduduk</a></li>
-            <li><a href="{{ route('index') }}">Kategori Surat</a></li>
-            <li><a href="{{ route('index') }}">Jenis Surat</a></li>
-            <li><a href="{{ route('index') }}">Template Surat</a></li>
+            <li><a href="{{ route('penduduk.index') }}">Penduduk</a></li>
+            <li><a href="{{ route('kategori-surat.index') }}">Kategori Surat</a></li>
+            <li><a href="/">Jenis Surat</a></li>
+            <li><a href="/">Template Surat</a></li>
         </ul>
     </li>
     <li><a class="has-arrow ai-icon" href="javascript:void()" aria-expanded="false">
@@ -21,7 +21,7 @@
         </a>
         <ul aria-expanded="false">
             <li><a href="content.html">Pengajuan Surat</a></li>
-            <li><a href="content-add.html"> Add Content</a></li>
+            <li><a href="content-add.html">Arsip Digital</a></li>
 
         </ul>
     </li>

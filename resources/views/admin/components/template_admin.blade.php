@@ -27,6 +27,8 @@
 
     <!-- Favicon icon -->
     @include('admin.layout.style')
+
+    @stack('styles')
 </head>
 
 <body>

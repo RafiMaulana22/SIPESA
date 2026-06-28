@@ -16,6 +16,11 @@
 <!-- Datatable -->
 <script src="{{ asset('xhtml') }}/js/plugins-init/datatables.init.js"></script>
 
+{{--  Rafi  --}}
+{{--  <script src="{{ asset('xhtml') }}/public/vendor/global/global.min.js" type="text/javascript"></script>
+<script src="{{ asset('xhtml') }}/public/vendor/bootstrap-select/js/bootstrap-select.min.js" type="text/javascript"></script>
+<script src="{{ asset('xhtml') }}/public/js/custom.min.js" type="text/javascript"></script>
+<script src="{{ asset('xhtml') }}/public/js/deznav-init.js" type="text/javascript"></script>  --}}
 <script>
     function togglePassword() {
         const passwordInput = document.getElementById("passwordConfirmation");
@@ -31,46 +36,46 @@
             eyeIcon.classList.add("fa-eye");
         }
     }
-    </script>
- <script>
-     function carouselReview() {
-         /*  testimonial one function by = owl.carousel.js */
-         jQuery('.testimonial-one').owlCarousel({
-             nav: true,
-             loop: true,
-             autoplay: true,
-             margin: 30,
-             dots: false,
-             left: true,
-             navText: ['<i class="fa fa-chevron-left" aria-hidden="true"></i>',
-                 '<i class="fa fa-chevron-right" aria-hidden="true"></i>'
-             ],
-             responsive: {
-                 0: {
-                     items: 1
-                 },
-                 484: {
-                     items: 2
-                 },
-                 882: {
-                     items: 3
-                 },
-                 1200: {
-                     items: 2
-                 },
+</script>
+<script>
+    function carouselReview() {
+        /*  testimonial one function by = owl.carousel.js */
+        jQuery('.testimonial-one').owlCarousel({
+            nav: true,
+            loop: true,
+            autoplay: true,
+            margin: 30,
+            dots: false,
+            left: true,
+            navText: ['<i class="fa fa-chevron-left" aria-hidden="true"></i>',
+                '<i class="fa fa-chevron-right" aria-hidden="true"></i>'
+            ],
+            responsive: {
+                0: {
+                    items: 1
+                },
+                484: {
+                    items: 2
+                },
+                882: {
+                    items: 3
+                },
+                1200: {
+                    items: 2
+                },
 
-                 1540: {
-                     items: 3
-                 },
-                 1740: {
-                     items: 4
-                 }
-             }
-         })
-     }
-     jQuery(window).on('load', function() {
-         setTimeout(function() {
-             carouselReview();
-         }, 1000);
-     });
- </script>
+                1540: {
+                    items: 3
+                },
+                1740: {
+                    items: 4
+                }
+            }
+        })
+    }
+    jQuery(window).on('load', function() {
+        setTimeout(function() {
+            carouselReview();
+        }, 1000);
+    });
+</script>

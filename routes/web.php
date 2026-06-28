@@ -1,10 +1,12 @@
 <?php
 
+use App\Http\Controllers\Admin\ArsipSuratController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\JenisSuratController;
 use App\Http\Controllers\Admin\JenisSuratController as AdminJenisSuratController;
 use App\Http\Controllers\Admin\KategoriSuratController;
 use App\Http\Controllers\Admin\PendudukController;
+use App\Http\Controllers\Admin\PengajuanSuratController;
 use App\Http\Controllers\Admin\TemplateSuratController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
@@ -52,3 +54,11 @@ Route::resource('jenis-surat', JenisSuratController::class);
 //template surat
 Route::resource('template-surat', TemplateSuratController::class);
 
+// Pengajuan Surat
+Route::get('/pengajuan-surat', [PengajuanSuratController::class, 'index'])->name('pengajuan-surat.index');
+Route::get('/pengajuan-surat/proses/{id}', [PengajuanSuratController::class, 'proses'])->name('pengajuan-surat.proses');
+Route::post('/pengajuan-surat/proses/{id}/setujui', [PengajuanSuratController::class, 'setujui'])->name('pengajuan-surat.setujui');
+Route::post('/pengajuan-surat/proses/{id}/tolak', [PengajuanSuratController::class, 'tolak'])->name('pengajuan-surat.tolak');
+
+// Arsip Digital
+Route::get('/arsip-digital', [ArsipSuratController::class, 'index'])->name('arsip-digital.index');

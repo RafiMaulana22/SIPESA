@@ -13,20 +13,15 @@ class LampiranPengajuanModel extends Model
 
     protected $primaryKey = 'id';
 
-    protected $fillable = [
-        'pengajuan_surat_id',
-        'persyaratan_surat_id',
-        'nama_file',
-        'file_path',
-    ];
+    protected $guarded = ['id'];
 
-    public function pengajuanSurat()
+    public function pengajuan()
     {
-        return $this->belongsTo(PengajuanSuratModel::class, 'pengajuan_surat_id');
+        return $this->belongsTo(PengajuanSuratModel::class);
     }
 
-    public function persyaratanSurat()
+    public function persyaratan()
     {
-        return $this->belongsTo(PersyaratanSuratModel::class, 'persyaratan_surat_id');
+        return $this->belongsTo(PersyaratanSuratModel::class);
     }
 }

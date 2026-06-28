@@ -15,14 +15,18 @@
             <li><a href="{{ route('template-surat.index') }}">Template Surat</a></li>
         </ul>
     </li>
-    <li><a class="has-arrow ai-icon" href="javascript:void()" aria-expanded="false">
+    <li>
+        <a class="has-arrow ai-icon" href="javascript:void()" aria-expanded="false">
             <i class="flaticon-381-briefcase"></i>
             <span class="nav-text">Pelayanan</span>
         </a>
         <ul aria-expanded="false">
-            <li><a href="content.html">Pengajuan Surat</a></li>
-            <li><a href="content-add.html">Arsip Digital</a></li>
-
+            <li>
+                <a href="/pengajuan-surat">Pengajuan Surat</a>
+            </li>
+            <li>
+                <a href="/arsip-digital">Arsip Digital</a>
+            </li>
         </ul>
     </li>
     <li><a class="has-arrow ai-icon" href="javascript:void()" aria-expanded="false">

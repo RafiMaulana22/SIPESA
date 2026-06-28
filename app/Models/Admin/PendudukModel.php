@@ -13,21 +13,14 @@ class PendudukModel extends Model
 
     protected $primaryKey = 'id';
 
-    protected $fillable = [
-        'nik',
-        'no_kk',
-        'nama',
-        'tempat_lahir',
-        'tanggal_lahir',
-        'jenis_kelamin',
-        'alamat',
-        'rt',
-        'rw',
-        'no_hp',
-        'status_penduduk',
-    ];
+    protected $guarded = ['id'];
 
     protected $casts = [
         'tanggal_lahir' => 'date',
     ];
+
+    public function pengajuanSurat()
+    {
+        return $this->hasMany(PengajuanSuratModel::class);
+    }
 }

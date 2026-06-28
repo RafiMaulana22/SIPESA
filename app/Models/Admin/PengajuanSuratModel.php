@@ -13,7 +13,7 @@ class PengajuanSuratModel extends Model
 
     protected $primaryKey = 'id';
 
-    protected $fillable = ['kode_pengajuan', 'penduduk_id', 'jenis_surat_id', 'nomor_antrian', 'tanggal_pengajuan', 'keperluan', 'status', 'catatan_admin'];
+    protected $guarded = ['id'];
 
     protected $casts = [
         'tanggal_pengajuan' => 'datetime',

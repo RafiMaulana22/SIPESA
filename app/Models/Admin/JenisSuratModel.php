@@ -13,11 +13,26 @@ class JenisSuratModel extends Model
 
     protected $primaryKey = 'id';
 
-    protected $fillable = ['kategori_surat_id', 'kode_surat', 'nama_surat', 'deskripsi', 'is_active'];
+    protected $guarded = ['id'];
 
     protected $casts = [
         'is_active' => 'boolean',
     ];
+
+    public function pengajuanSurat()
+    {
+        return $this->hasMany(PengajuanSuratModel::class);
+    }
+
+    public function template()
+    {
+        return $this->hasOne(TemplateSuratModel::class);
+    }
+
+    public function persyaratan()
+    {
+        return $this->hasMany(PersyaratanSuratModel::class);
+    }
 
     public function kategoriSurat()
     {

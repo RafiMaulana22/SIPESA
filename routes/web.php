@@ -1,8 +1,11 @@
 <?php
 
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\JenisSuratController;
+use App\Http\Controllers\Admin\JenisSuratController as AdminJenisSuratController;
 use App\Http\Controllers\Admin\KategoriSuratController;
 use App\Http\Controllers\Admin\PendudukController;
+use App\Http\Controllers\Admin\TemplateSuratController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ResetPasswordController;
@@ -42,4 +45,10 @@ Route::resource('penduduk', PendudukController::class);
 
 //KATEGORI SURAT
 Route::resource('kategori-surat', KategoriSuratController::class);
+
+//jenis surat
+Route::resource('jenis-surat', JenisSuratController::class);
+
+//template surat
+Route::resource('template-surat', TemplateSuratController::class);
 

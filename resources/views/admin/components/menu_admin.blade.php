@@ -11,8 +11,8 @@
         <ul aria-expanded="false">
             <li><a href="{{ route('penduduk.index') }}">Penduduk</a></li>
             <li><a href="{{ route('kategori-surat.index') }}">Kategori Surat</a></li>
-            <li><a href="/">Jenis Surat</a></li>
-            <li><a href="/">Template Surat</a></li>
+            <li><a href="{{ route('jenis-surat.index') }}">Jenis Surat</a></li>
+            <li><a href="{{ route('template-surat.index') }}">Template Surat</a></li>
         </ul>
     </li>
     <li><a class="has-arrow ai-icon" href="javascript:void()" aria-expanded="false">

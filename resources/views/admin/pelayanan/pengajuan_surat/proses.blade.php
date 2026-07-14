@@ -3,7 +3,7 @@
 @section('content')
     <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center mb-4 gap-3">
         <div>
-            <h3 class="fw-bold mb-1" style="letter-spacing: -0.02em;">
+            <h3 class="fw-bold  mb-1" style="letter-spacing: -0.02em;">
                 Detail Pengajuan Surat
             </h3>
             <p class="text-muted small mb-0">
@@ -18,6 +18,7 @@
         </div>
     </div>
     <div class="col-lg-12">
+
         <div class="card bg-white border-0 shadow-sm rounded-4 mb-4">
             <div class="card-header bg-white p-4 border-0 pb-0">
                 <h5 class="mb-0 fw-bold " style="letter-spacing: -0.01em;">
@@ -43,7 +44,8 @@
 
                     <div class="col-sm-6">
                         <label class="text-muted small d-block mb-1 fw-medium">Tanggal Masuk Sistem</label>
-                        <p class=" fw-medium m-0">{{ $pengajuan->tanggal_pengajuan->translatedFormat('d F Y') }}</p>
+                        <p class=" fw-medium m-0">
+                            {{ $pengajuan->tanggal_pengajuan->translatedFormat('d F Y') }}</p>
                     </div>
 
                     <div class="col-sm-6">
@@ -51,24 +53,16 @@
                         <div class="m-0">
                             @if ($pengajuan->status == 'menunggu')
                                 <span
-                                    class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2.5 py-1.5 rounded-2 fw-medium">
-                                    Menunggu
-                                </span>
+                                    class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2.5 py-1.5 rounded-2 fw-medium">Menunggu</span>
                             @elseif($pengajuan->status == 'diproses')
                                 <span
-                                    class="badge bg-info-subtle text-info-emphasis border border-info-subtle px-2.5 py-1.5 rounded-2 fw-medium">
-                                    Diproses
-                                </span>
+                                    class="badge bg-info-subtle text-info border border-info-subtle px-2.5 py-1.5 rounded-2 fw-medium">Diproses</span>
                             @elseif($pengajuan->status == 'selesai')
                                 <span
-                                    class="badge bg-success-subtle text-success-emphasis border border-success-subtle px-2.5 py-1.5 rounded-2 fw-medium">
-                                    Selesai
-                                </span>
+                                    class="badge bg-success-subtle text-success border border-success-subtle px-2.5 py-1.5 rounded-2 fw-medium">Selesai</span>
                             @else
                                 <span
-                                    class="badge bg-danger-subtle text-danger-emphasis border border-danger-subtle px-2.5 py-1.5 rounded-2 fw-medium">
-                                    Ditolak
-                                </span>
+                                    class="badge bg-danger-subtle text-danger border border-danger-subtle px-2.5 py-1.5 rounded-2 fw-medium">Ditolak</span>
                             @endif
                         </div>
                     </div>
@@ -80,7 +74,8 @@
 
                     <div class="col-sm-6">
                         <label class="text-muted small d-block mb-1 fw-medium">Kategori Klasifikasi</label>
-                        <p class=" fw-medium m-0">{{ $pengajuan->jenisSurat->kategoriSurat->nama_kategori }}</p>
+                        <p class=" fw-medium m-0">
+                            {{ $pengajuan->jenisSurat->kategoriSurat->nama_kategori }}</p>
                     </div>
                 </div>
             </div>
@@ -125,7 +120,7 @@
             </div>
         </div>
 
-        <div class="card bg-white border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="card bg-white border-0 shadow-sm rounded-4 overflow-hidden mb-4">
             <div class="card-header bg-white p-4 border-0 pb-0">
                 <h5 class="mb-0 fw-bold " style="letter-spacing: -0.01em;">
                     Berkas Lampiran Persyaratan
@@ -144,7 +139,8 @@
                         <tbody>
                             @foreach ($pengajuan->lampiran as $lampiran)
                                 <tr>
-                                    <td class="ps-3  fw-medium"{{ $lampiran->persyaratan->nama_persyaratan }} </td>
+                                    <td class="ps-3 fw-medium ">
+                                        {{ $lampiran->persyaratan->nama_persyaratan }}</td>
                                     <td>
                                         @if ($lampiran->status == 'valid')
                                             <span
@@ -154,24 +150,48 @@
                                                 class="badge bg-danger-subtle text-danger border border-danger-subtle px-2.5 py-1.5 rounded-2 fw-medium">Ditolak</span>
                                         @else
                                             <span
-                                                class="badge bg-warning-subtle text-warning border border-warning-subtle px-2.5 py-1.5 rounded-2 fw-medium">Menunggu</span>
+                                                class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2.5 py-1.5 rounded-2 fw-medium">Menunggu</span>
                                         @endif
                                     </td>
                                     <td class="pe-3 text-end">
-                                        <a target="_blank" href="{{ Storage::url($lampiran->file) }}"
-                                            class="btn btn-sm btn-light border text-primary px-3 rounded-2 fw-medium shadow-none">
-                                            <i class="bi bi-eye me-1"></i> Periksa File
-                                        </a>
+                                        <div class="d-inline-flex gap-1">
+                                            <a target="_blank" href="{{ Storage::url($lampiran->file_path) }}"
+                                                class="btn btn-sm btn-light border text-primary px-3 rounded-2 fw-medium shadow-none">
+                                                <i class="bi bi-eye me-1"></i> Periksa
+                                            </a>
+
+                                            @if ($lampiran->status == 'menunggu')
+                                                <form action="{{ route('pengajuan-surat.lampiran.valid', $lampiran->id) }}"
+                                                    method="POST" class="d-inline m-0">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <button type="submit"
+                                                        class="btn btn-sm btn-success px-3 rounded-2 fw-medium shadow-none text-white">
+                                                        <i class="bi bi-check-circle me-1"></i> Valid
+                                                    </button>
+                                                </form>
+
+                                                <button type="button"
+                                                    class="btn btn-sm btn-danger px-3 rounded-2 fw-medium shadow-none text-white"
+                                                    data-bs-toggle="modal" data-bs-target="#modalTolakLampiran"
+                                                    data-url="{{ route('pengajuan-surat.lampiran.tolak', $lampiran->id) }}">
+                                                    <i class="bi bi-x-circle me-1"></i> Tolak
+                                                </button>
+                                            @endif
+                                        </div>
                                     </td>
                                 </tr>
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
+
     </div>
 
     <div class="col-lg-12">
+
         <div class="card bg-white border-0 shadow-sm rounded-4 mb-4">
             <div class="card-header bg-white p-4 border-0 pb-0">
                 <h5 class="mb-0 fw-bold " style="letter-spacing: -0.01em;">
@@ -180,64 +200,185 @@
             </div>
             <div class="card-body p-4">
                 <div class="d-flex flex-column gap-3">
-                    @foreach ($pengajuan->logs as $log)
-                        <div class="d-flex gap-3 position-relative">
-                            <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center p-2 mt-1"
-                                style="width: 32px; height: 32px; flex-shrink: 0;">
-                                <i class="bi bi-file-earmark-plus small"></i>
-                            </div>
-                            <div>
-                                <span class=" fw-bold d-block small">{{ $log->aktivitas }}</span>
-                                <small class="text-muted d-block mt-0.5"
-                                    style="font-size: 0.75rem;">{{ $log->created_at->translatedFormat('d F Y H:i') }}</small>
-                            </div>
+                    <div class="d-flex gap-3 position-relative">
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center p-2 mt-1"
+                            style="width: 32px; height: 32px; flex-shrink: 0;">
+                            <i class="bi bi-file-earmark-plus small"></i>
                         </div>
-                    @endforeach
+                        <div>
+                            <span class=" fw-bold d-block small">Pengajuan Berkas Dibuat</span>
+                            <small class="text-muted d-block mt-0.5"
+                                style="font-size: 0.75rem;">{{ $pengajuan->created_at->translatedFormat('d F Y H:i') }}
+                                WIB</small>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="card bg-white border-0 shadow-sm rounded-4 mb-4">
-            <div class="card-header bg-white p-4 border-0 pb-0">
-                <h5 class="mb-0 fw-bold " style="letter-spacing: -0.01em;">
-                    Catatan Peninjauan Operator
-                </h5>
-            </div>
-            <div class="card-body p-4">
-                <textarea class="form-control border bg-light bg-opacity-50 p-3 rounded-3 shadow-none  small" rows="5"
-                    name="catatan_admin"
-                    placeholder="Masukkan alasan penolakan berkas atau catatan tambahan operasional cetak dokumen...">{{ old('catatan_admin', $pengajuan->catatan_admin) }}
-</textarea>
-            </div>
-        </div>
+        @php
+            $adaLampiranDitolak = $pengajuan->lampiran->contains('status', 'ditolak');
+        @endphp
 
-        <div class="card bg-white border-0 shadow-sm rounded-4">
-            <div class="card-header bg-white p-4 border-0 pb-0">
-                <h5 class="mb-0 fw-bold " style="letter-spacing: -0.01em;">
-                    Tindakan Berkas Eksekusi
-                </h5>
+        <form method="POST" id="formTolak" action="{{ route('pengajuan-surat.tolak', $pengajuan) }}" class="mb-3">
+            @csrf
+            <div class="card bg-white border-0 shadow-sm rounded-4 mb-3">
+                <div class="card-header bg-white p-4 border-0 pb-0">
+                    <h5 class="mb-0 fw-bold " style="letter-spacing: -0.01em;">
+                        Catatan Peninjauan Operator
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <textarea class="form-control border bg-light bg-opacity-50 p-3 rounded-3 shadow-none  small" rows="5"
+                        name="catatan_admin"
+                        placeholder="Masukkan alasan penolakan berkas atau catatan tambahan operasional cetak dokumen...">{{ old('catatan_admin', $pengajuan->catatan_admin) }}</textarea>
+                </div>
             </div>
-            <div class="card-body p-4 d-grid gap-2">
-                <form method="POST" action="{{ route('pengajuan-surat.setujui', $pengajuan) }}">
 
-                    @csrf
-                    <button
-                        class="btn btn-success rounded-3 py-2.5 fw-medium shadow-none transition-base d-flex align-items-center justify-content-center gap-2">
-                        <i class="bi bi-play-circle fs-5"></i> Setujui & Proses Surat
-                    </button>
-                </form>
-                <form method="POST" action="{{ route('pengajuan-surat.tolak', $pengajuan) }}">
+            <button type="submit"
+                class="btn btn-danger w-100 rounded-3 py-2.5 fw-medium shadow-none transition-base d-flex align-items-center justify-content-center gap-2 text-white">
+                <i class="bi bi-x-circle fs-5"></i> Tolak Pengajuan Berkas
+            </button>
+        </form>
 
-                    @csrf
-                    <input type="hidden" name="catatan_admin" id="catatan_admin">
+        <form method="POST" id="formSetujui" action="{{ route('pengajuan-surat.setujui', $pengajuan) }}">
+            @csrf
+            <button type="submit"
+                class="btn btn-success w-100 rounded-3 py-2.5 fw-medium shadow-none transition-base d-flex align-items-center justify-content-center gap-2 text-white"
+                {{ $adaLampiranDitolak ? 'disabled' : '' }}>
+                <i class="bi bi-play-circle fs-5"></i> Setujui & Proses Surat
+            </button>
+        </form>
 
-                    <button
-                        class="btn btn-danger rounded-3 py-2.5 fw-medium shadow-none transition-base d-flex align-items-center justify-content-center gap-2">
-                        <i class="bi bi-x-circle fs-5"></i> Tolak Pengajuan Berkas
-                    </button>
-                </form>
+        @if ($adaLampiranDitolak)
+            <div class="alert alert-danger rounded-3 mt-3 mb-0 small border-0 shadow-sm d-flex align-items-start gap-2">
+                <i class="bi bi-exclamation-triangle-fill mt-0.5"></i>
+                <div>
+                    Pengajuan tidak dapat diproses karena masih terdapat lampiran yang <strong>ditolak</strong>.
+                    Silakan minta pemohon memperbaiki berkas terlebih dahulu.
+                </div>
             </div>
-        </div>
+        @endif
 
     </div>
-@endsection
+
+    <div class="modal fade" id="modalTolakLampiran" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <form method="POST" id="formTolakLampiran">
+                @csrf
+                @method('PUT')
+                <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden bg-white">
+                    <div class="modal-header border-0 pb-0 pt-4 px-4 d-flex align-items-start justify-content-between">
+                        <div>
+                            <h5 class="modal-title fw-bold " style="letter-spacing: -0.01em;">Tolak Dokumen
+                                Lampiran</h5>
+                            <p class="text-muted small m-0 mt-1">Berikan alasan mengapa berkas lampiran ini tidak valid.
+                            </p>
+                        </div>
+                        <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body p-4">
+                        <label class="form-label fw-medium  small mb-2">Alasan Penolakan Berkas</label>
+                        <textarea class="form-control border bg-light bg-opacity-50 p-3 rounded-3 shadow-none  small" rows="4"
+                            name="catatan" required placeholder="Contoh: Foto KTP buram atau masa berlaku berkas sudah kedaluwarsa..."></textarea>
+                    </div>
+                    <div class="modal-footer border-0 pt-0 pb-4 px-4 gap-2">
+                        <button class="btn btn-light rounded-3 px-4 fw-medium text-secondary flex-grow-1 flex-sm-grow-0"
+                            data-bs-dismiss="modal" type="button">Batal</button>
+                        <button class="btn btn-danger rounded-3 px-4 fw-medium flex-grow-1 flex-sm-grow-0 text-white"
+                            type="submit">Tolak Dokumen</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    @endsection
+
+    @push('scripts')
+        <script>
+            const modalTolak = document.getElementById('modalTolakLampiran');
+            modalTolak.addEventListener('show.bs.modal', function(event) {
+                const button = event.relatedTarget;
+                const url = button.getAttribute('data-url');
+                document.getElementById('formTolakLampiran').action = url;
+            });
+        </script>
+
+        <script>
+            // ==========================
+            // KONFIRMASI SETUJUI
+            // ==========================
+            document.getElementById('formSetujui').addEventListener('submit', function(e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Proses Pengajuan?',
+                    text: 'Pengajuan surat akan segera diproses ke antrean berikutnya.',
+                    icon: 'question',
+                    showCancelButton: true,
+                    letAnchor: false,
+                    confirmButtonColor: '#16a34a',
+                    cancelButtonColor: '#475569',
+                    confirmButtonText: 'Ya, Proses',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        this.submit();
+                    }
+                });
+            });
+
+            // ==========================
+            // KONFIRMASI TOLAK
+            // ==========================
+            document.getElementById('formTolak').addEventListener('submit', function(e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Tolak Pengajuan?',
+                    text: 'Seluruh berkas pengajuan surat ini akan ditolak sistem.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#dc3545',
+                    cancelButtonColor: '#475569',
+                    confirmButtonText: 'Ya, Tolak',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        this.submit();
+                    }
+                });
+            });
+        </script>
+
+        @if (session('success'))
+            <script>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil',
+                    text: "{{ session('success') }}",
+                    confirmButtonColor: '#16a34a'
+                });
+            </script>
+        @endif
+
+        @if (session('error'))
+            <script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal',
+                    text: "{{ session('error') }}",
+                    confirmButtonColor: '#dc3545'
+                });
+            </script>
+        @endif
+
+        @if ($errors->any())
+            <script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Validasi Gagal',
+                    text: "{{ $errors->first() }}",
+                    confirmButtonColor: '#dc3545'
+                });
+            </script>
+        @endif
+    @endpush

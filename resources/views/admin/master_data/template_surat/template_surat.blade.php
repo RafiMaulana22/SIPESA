@@ -1,384 +1,353 @@
 @extends('admin.components.template_admin')
+
 @section('content')
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <ul>
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-                @if (session('success'))
-                    <div class="alert alert-success alert-dismissible fade show" id="alertSuccess" role="alert">
-                        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2"
-                            fill="none" stroke-linecap="round" stroke-linejoin="round" class="me-2">
-                            <polyline points="9 11 12 14 22 4"></polyline>
-                            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-                        </svg>
-                        <strong>Success!</strong>
-                        {{ session('success') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
+    <!-- HEADER UTAMA -->
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center mb-4 gap-3">
+        <div>
+            <h3 class="fw-bold  mb-1" style="letter-spacing: -0.02em;">
+                Master Template Surat
+            </h3>
+            <p class="text-muted small mb-0">
+                Kelola berkas master cetak (*template file Word*) yang digunakan otomatis oleh sistem.
+            </p>
+        </div>
+    </div>
 
-                    <script>
-                        setTimeout(function() {
-                            let alertElement = document.getElementById('alertSuccess');
-                            if (alertElement) {
-                                let bsAlert = new bootstrap.Alert(alertElement);
-                                bsAlert.close();
-                            }
-                        }, 2000);
-                    </script>
-                @endif
-                <div class="card-header">
-                    <h4 class="card-title">Data Template Surat</h4>
-                    <div>
-                        <button type="button" class="btn btn-primary me-2" data-bs-toggle="modal"
-                            data-bs-target="#ModalTambah">
-                            <i class="fa fa-plus me-1"></i>
-                            Add Data
-                        </button>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table id="example" class="display min-w850">
-                            <thead>
-                                <tr>
-                                    <th>No</th>
-                                    <th>Nama Surat</th>
-                                    <th>Judul Surat</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($template as $get)
-                                    <tr>
-                                        <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $get->jenissurat->nama_surat }}</td>
-                                        <td>{{ $get->judul_surat }}</td>
-                                        <td>
-                                            <div class="d-flex">
-                                                <button type="button" class="btn btn-success shadow btn-xs sharp me-1"
-                                                    data-bs-toggle="modal" data-bs-target="#ModalDetail{{ $get->id }}"
-                                                    title="Detail">
-                                                    <i class="fa fa-eye"></i>
-                                                </button>
-                                                <button type="button" class="btn btn-primary shadow btn-xs sharp me-1"
-                                                    data-bs-toggle="modal" data-bs-target="#ModalEdit{{ $get->id }}"
-                                                    title="Edit"><i class="fa fa-pencil"></i>
-                                                </button>
-                                                <a href="#ModalHapus{{ $get->id }}" data-bs-toggle="modal"
-                                                    class="btn btn-danger shadow btn-xs sharp" data-bs-toggle="modal"><i
-                                                        class="fa fa-trash"></i></a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+    <!-- NOTIFIKASI SYSTEM -->
+    @if ($errors->any())
+        <div class="alert alert-danger rounded-3 mb-4 small border-0 shadow-sm">
+            <ul class="mb-0 ps-3">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    @if (session('success'))
+        <div class="alert alert-success alert-dismissible fade show rounded-3 mb-4 small border-0 shadow-sm d-flex align-items-center gap-2"
+            id="alertSuccess" role="alert">
+            <i class="bi bi-check-circle-fill fs-5"></i>
+            <div>
+                <strong>Berhasil!</strong> {{ session('success') }}
+            </div>
+            <button type="button" class="btn-close shadow-none" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <script>
+            setTimeout(function() {
+                let alertElement = document.getElementById('alertSuccess');
+                if (alertElement) {
+                    let bsAlert = new bootstrap.Alert(alertElement);
+                    bsAlert.close();
+                }
+            }, 2000);
+        </script>
+    @endif
+
+    <!-- SEKSI DATA TABEL -->
+    <div class="card bg-white border-0 shadow-sm rounded-4 overflow-hidden">
+        <div
+            class="card-header bg-white p-4 border-0 d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
+            <div>
+                <h5 class="mb-0 fw-bold " style="letter-spacing: -0.01em;">
+                    Daftar Berkas Template Word
+                </h5>
+            </div>
+            <button
+                class="btn btn-primary rounded-3 px-4 fw-medium shadow-none transition-base d-flex align-items-center gap-2"
+                data-bs-toggle="modal" data-bs-target="#ModalTambah">
+                <i class="bi bi-plus-circle-fill"></i> Tambah Template
+            </button>
+        </div>
+
+        <div class="table-responsive px-2">
+            <table id="example" class="table table-hover align-middle mb-0 custom-admin-table w-100">
+                <thead>
+                    <tr>
+                        <th class="ps-3" width="8%">No</th>
+                        <th>Jenis Surat Mandiri</th>
+                        <th>Judul Format Surat</th>
+                        <th>Status Unduhan Dokumen</th>
+                        <th class="pe-3 text-end" width="20%">Aksi Manajemen</th>
+                    </tr>
+                </thead>
+                <tbody>
                     @foreach ($template as $get)
-                        <!-- Modal Detail -->
-                        <div class="modal fade" id="ModalDetail{{ $get->id }}" tabindex="-1" aria-hidden="true">
-                            <div class="modal-dialog modal-xl">
-
-                                <div class="modal-content">
-
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">
-                                            <i class="fa fa-eye me-2"></i>
-                                            Detail Template Surat
-                                        </h5>
-
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal">
-                                        </button>
-                                    </div>
-
-                                    <div class="modal-body">
-
-                                        <div class="row">
-
-                                            <div class="col-md-12 mb-3">
-                                                <label class="form-label">
-                                                    Jenis Surat
-                                                </label>
-
-                                                <input type="text" class="form-control"
-                                                    value="{{ $get->jenisSurat->nama_surat }}" readonly>
-                                            </div>
-
-                                            <div class="col-md-12 mb-3">
-                                                <label class="form-label">
-                                                    Judul Surat
-                                                </label>
-
-                                                <input type="text" class="form-control" value="{{ $get->judul_surat }}"
-                                                    readonly>
-                                            </div>
-
-                                            <div class="col-md-12 mb-3">
-                                                <label class="form-label">
-                                                    Isi Template Surat
-                                                </label>
-
-                                                <textarea class="form-control" rows="15" readonly>{{ $get->isi_template }}</textarea>
-                                            </div>
-
-                                        </div>
-
-                                    </div>
-
-                                    <div class="modal-footer">
-
-                                        <button type="button" class="btn btn-danger light" data-bs-dismiss="modal">
-
-                                            <i class="fa fa-times"></i>
-                                            Tutup
-
-                                        </button>
-
-                                    </div>
-
+                        <tr>
+                            <td class="ps-3 text-muted fw-medium">{{ $loop->iteration }}</td>
+                            <td class="fw-bold ">{{ $get->jenissurat->nama_surat }}</td>
+                            <td class="text-secondary fw-medium">{{ $get->judul_surat }}</td>
+                            <td>
+                                @if ($get->file_template)
+                                    <a href="{{ asset('template_surat/' . $get->file_template) }}" target="_blank"
+                                        class="btn btn-sm btn-light border text-primary px-3 rounded-2 fw-medium shadow-none">
+                                        <i class="bi bi-file-earmark-word-fill me-1 text-primary"></i> Lihat File
+                                    </a>
+                                @else
+                                    <span
+                                        class="badge bg-danger-subtle text-danger border border-danger-subtle px-2.5 py-1.5 rounded-2 fw-medium">
+                                        Belum Tersedia
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="pe-3 text-end">
+                                <div class="d-inline-flex gap-1">
+                                    <button type="button"
+                                        class="btn btn-sm btn-light border text-success px-2.5 py-1.5 rounded-2 shadow-none"
+                                        data-bs-toggle="modal" data-bs-target="#ModalDetail{{ $get->id }}"
+                                        title="Lihat rincian">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                    <button type="button"
+                                        class="btn btn-sm btn-light border text-primary px-2.5 py-1.5 rounded-2 shadow-none"
+                                        data-bs-toggle="modal" data-bs-target="#ModalEdit{{ $get->id }}"
+                                        title="Ubah data">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button type="button"
+                                        class="btn btn-sm btn-light border text-danger px-2.5 py-1.5 rounded-2 shadow-none"
+                                        data-bs-toggle="modal" data-bs-target="#ModalHapus{{ $get->id }}"
+                                        title="Hapus template">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
                                 </div>
-
-                            </div>
-                        </div>
-                        <!-- Modal Edit -->
-                        <div class="modal fade" id="ModalEdit{{ $get->id }}" tabindex="-1" aria-hidden="true">
-                            <div class="modal-dialog modal-xl">
-                                <form action="{{ route('template-surat.update', $get->id) }}" method="POST">
-                                    @csrf
-                                    @method('PUT')
-
-                                    <div class="modal-content">
-
-                                        <div class="modal-header">
-                                            <h5 class="modal-title">
-                                                <i class="fa fa-pencil me-2"></i>
-                                                Edit Template Surat
-                                            </h5>
-
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal">
-                                            </button>
-                                        </div>
-
-                                        <div class="modal-body">
-
-                                            <div class="row">
-
-                                                <div class="col-md-12 mb-3">
-                                                    <label class="form-label">
-                                                        Jenis Surat
-                                                    </label>
-
-                                                    <select name="jenis_surat_id" class="form-control" required>
-
-                                                        @foreach ($jenis as $item)
-                                                            <option value="{{ $item->id }}"
-                                                                {{ $item->id == $get->jenis_surat_id ? 'selected' : '' }}>
-
-                                                                {{ $item->nama_surat }}
-
-                                                            </option>
-                                                        @endforeach
-
-                                                    </select>
-                                                </div>
-
-                                                <div class="col-md-12 mb-3">
-                                                    <label class="form-label">
-                                                        Judul Surat
-                                                    </label>
-
-                                                    <input type="text" name="judul_surat" class="form-control"
-                                                        value="{{ $get->judul_surat }}" required>
-                                                </div>
-
-                                                <div class="col-md-12 mb-3">
-                                                    <label class="form-label">
-                                                        Isi Template Surat
-                                                    </label>
-
-                                                    <textarea name="isi_template" class="form-control" rows="15" required>{{ $get->isi_template }}</textarea>
-                                                </div>
-
-                                            </div>
-
-                                        </div>
-
-                                        <div class="modal-footer">
-
-                                            <button type="button" class="btn btn-danger light" data-bs-dismiss="modal">
-
-                                                <i class="fa fa-times"></i>
-                                                Batal
-
-                                            </button>
-
-                                            <button type="submit" class="btn btn-primary">
-
-                                                <i class="fa fa-save"></i>
-                                                Update
-
-                                            </button>
-
-                                        </div>
-
-                                    </div>
-
-                                </form>
-                            </div>
-                        </div>
-                        <!-- Modal hapus -->
-                        <div class="modal fade" id="ModalHapus{{ $get->id }}" tabindex="-1">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <form action="{{ route('jenis-surat.destroy', $get->id) }}" method="POST">
-                                        @csrf
-                                        @method('DELETE')
-                                        <div class="modal-header">
-                                            <h5 class="modal-title">Peringatan !!!</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            Apakah Anda Yakin Menghapus Data dengan Nama
-                                            <br><b>{{ $get->nama_surat }}</b>?
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-danger light"
-                                                data-bs-dismiss="modal">Close</button>
-                                            <button type="submit" class="btn btn-danger">
-                                                <i class="fa fa-trash"></i> Hapus
-                                            </button>
-                                        </div>
-                                </div>
-                                </form>
-                            </div>
-                        </div>
+                            </td>
+                        </tr>
                     @endforeach
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pb-4"></div>
+    </div>
+
+    <!-- LOOPING COMPONENT MODAL DETAIL, EDIT & HAPUS -->
+    @foreach ($template as $get)
+        <!-- Modal Detail -->
+        <div class="modal fade" id="ModalDetail{{ $get->id }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden bg-white">
+                    <div class="modal-header border-0 pb-0 pt-4 px-4 d-flex align-items-start justify-content-between">
+                        <div>
+                            <h5 class="modal-title fw-bold " style="letter-spacing: -0.01em;">
+                                Detail File Template Surat
+                            </h5>
+                            <p class="text-muted small m-0 mt-1">Spesifikasi format dokumen dinas desa.</p>
+                        </div>
+                        <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body p-4">
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <label class="form-label fw-medium  small mb-1">Jenis Surat</label>
+                                <input type="text"
+                                    class="form-control bg-light border-0 py-2.5  fw-semibold rounded-3"
+                                    value="{{ $get->jenissurat->nama_surat }}" readonly>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label fw-medium  small mb-1">Judul Format Surat</label>
+                                <input type="text" class="form-control bg-light border-0 py-2.5  rounded-3"
+                                    value="{{ $get->judul_surat }}" readonly>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label fw-medium  small mb-1">File Unduhan Master</label>
+                                <div>
+                                    @if ($get->file_template)
+                                        <a href="{{ asset('template_surat/' . $get->file_template) }}" target="_blank"
+                                            class="btn btn-primary rounded-3 px-4 py-2 fw-medium shadow-none transition-base">
+                                            <i class="bi bi-file-earmark-word me-1"></i> Unduh File Word (.docx)
+                                        </a>
+                                    @else
+                                        <span
+                                            class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 rounded-2 fw-medium">
+                                            Berkas Fisik Belum Diunggah
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 pt-0 pb-4 px-4">
+                        <button type="button" class="btn btn-light rounded-3 px-4 fw-medium text-secondary w-100 w-sm-auto"
+                            data-bs-dismiss="modal">Tutup</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+
+        <!-- Modal Edit -->
+        <div class="modal fade" id="ModalEdit{{ $get->id }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden bg-white">
+                    <form action="{{ route('template-surat.update', $get->id) }}" method="POST"
+                        enctype="multipart/form-data">
+                        @csrf
+                        @method('PUT')
+                        <div class="modal-header border-0 pb-0 pt-4 px-4 d-flex align-items-start justify-content-between">
+                            <div>
+                                <h5 class="modal-title fw-bold " style="letter-spacing: -0.01em;">
+                                    Ubah File Template Surat
+                                </h5>
+                                <p class="text-muted small m-0 mt-1">Perbarui judul atau ganti file master cetak surat.
+                                </p>
+                            </div>
+                            <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body p-4">
+                            <div class="row g-3">
+                                <div class="col-md-12">
+                                    <label class="form-label fw-medium  small mb-2">Pilihan Jenis
+                                        Surat</label>
+                                    <select name="jenis_surat_id" class="form-control default-select"
+                                        required>
+                                        @foreach ($jenis as $item)
+                                            <option value="{{ $item->id }}"
+                                                {{ $item->id == $get->jenis_surat_id ? 'selected' : '' }}>
+                                                {{ $item->nama_surat }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="form-label fw-medium  small mb-2">Judul Format Surat</label>
+                                    <input type="text" name="judul_surat"
+                                        class="form-control search-box-modern py-2.5 bg-white border"
+                                        value="{{ $get->judul_surat }}" required>
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="form-label fw-medium  small mb-2">Berkas Pendukung Saat
+                                        Ini</label>
+                                    <div class="mb-3">
+                                        @if ($get->file_template)
+                                            <a href="{{ asset('template_surat/' . $get->file_template) }}"
+                                                target="_blank" class="btn btn-sm btn-success rounded-2 px-3 shadow-none">
+                                                <i class="bi bi-file-earmark-word me-1"></i> File Word Terlampir
+                                            </a>
+                                        @endif
+                                    </div>
+                                    <label class="form-label fw-medium  small mb-2">Unggah File Template
+                                        Baru</label>
+                                    <input type="file" name="file_template"
+                                        class="form-control form-control-modern py-2 bg-white border" accept=".doc,.docx">
+                                    <div class="form-text text-muted mt-2" style="font-size: 0.75rem;">
+                                        <i class="bi bi-info-circle"></i> Biarkan kosong jika tidak ingin memperbarui
+                                        struktur file word saat ini.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer border-0 pt-0 pb-4 px-4 gap-2">
+                            <button type="button"
+                                class="btn btn-light rounded-3 px-4 fw-medium text-secondary flex-grow-1 flex-sm-grow-0"
+                                data-bs-dismiss="modal">Batal</button>
+                            <button type="submit"
+                                class="btn btn-primary rounded-3 px-4 fw-medium flex-grow-1 flex-sm-grow-0">Simpan
+                                Perubahan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Hapus -->
+        <div class="modal fade" id="ModalHapus{{ $get->id }}" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden bg-white">
+                    <form action="{{ route('template-surat.destroy', $get->id) }}" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <div class="modal-header border-0 pb-0 pt-4 px-4 d-flex align-items-start justify-content-between">
+                            <div>
+                                <h5 class="modal-title fw-bold " style="letter-spacing: -0.01em;">Peringatan
+                                    Penting !</h5>
+                                <p class="text-muted small m-0 mt-1">Konfirmasi penghapusan data format cetak dari
+                                    sistem.</p>
+                            </div>
+                            <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body p-4 text-secondary">
+                            Apakah Anda benar-benar yakin ingin menghapus data master berkas template milik surat:<br>
+                            <strong class=" d-block mt-2 fs-6"><i
+                                    class="bi bi-file-earmark-x text-danger me-1"></i>
+                                {{ $get->jenissurat->nama_surat }}</strong>
+                        </div>
+                        <div class="modal-footer border-0 pt-0 pb-4 px-4 gap-2">
+                            <button type="button"
+                                class="btn btn-light rounded-3 px-4 fw-medium text-secondary flex-grow-1 flex-sm-grow-0"
+                                data-bs-dismiss="modal">Batal</button>
+                            <button type="submit"
+                                class="btn btn-danger rounded-3 px-4 fw-medium flex-grow-1 flex-sm-grow-0">Ya, Hapus
+                                Berkas</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    @endforeach
+
     <!-- Modal Tambah -->
     <div class="modal fade" id="ModalTambah" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
-            <form action="{{ route('template-surat.store') }}" method="POST">
-                @csrf
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">
-                            <i class="fa fa-plus-circle me-2"></i>
-                            Tambah Template Surat
-                        </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal">
-                        </button>
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden bg-white">
+                <form action="{{ route('template-surat.store') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-header border-0 pb-0 pt-4 px-4 d-flex align-items-start justify-content-between">
+                        <div>
+                            <h5 class="modal-title fw-bold " style="letter-spacing: -0.01em;">
+                                Tambah Template Surat Baru
+                            </h5>
+                            <p class="text-muted small m-0 mt-1">Unggah berkas ekstensi Word baru sebagai struktur
+                                cetak otomatis.</p>
+                        </div>
+                        <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
                     </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-md-12 mb-3">
-                                <label class="form-label">
-                                    Jenis Surat
-                                </label>
-                                <select name="jenis_surat_id" class="form-control" required>
-                                    <option value="">
-                                        Pilih Jenis Surat
-                                    </option>
+                    <div class="modal-body p-4">
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <label class="form-label fw-medium  small mb-2">Hubungkan Ke Jenis
+                                    Surat</label>
+                                <select name="jenis_surat_id" class="form-control default-select"
+                                    required>
+                                    <option value="" selected disabled>Pilih Jenis Surat Layanan</option>
                                     @foreach ($jenis as $get)
-                                        <option value="{{ $get->id }}">
-                                            {{ $get->nama_surat }}
-                                        </option>
+                                        <option value="{{ $get->id }}">{{ $get->nama_surat }}</option>
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-md-12 mb-3">
-                                <label class="form-label">
-                                    Judul Surat
-                                </label>
-                                <input type="text" name="judul_surat" class="form-control"
-                                    placeholder="Masukkan judul surat" required>
+                            <div class="col-md-12">
+                                <label class="form-label fw-medium  small mb-2">Judul Dokumen Format
+                                    Surat</label>
+                                <input type="text" name="judul_surat"
+                                    class="form-control search-box-modern py-2.5 bg-white border"
+                                    placeholder="Contoh: Format Resmi Surat Keterangan Usaha" required>
                             </div>
-                            <div class="col-md-12 mb-3">
-
-                                <label class="form-label">
-                                    Isi Template Surat
-                                </label>
-                                <div class="mb-3">
-
-                                    <label class="form-label">
-                                        Placeholder
-                                    </label>
-                                    <br>
-                                    <button class="btn btn-primary btn-sm insert" type="button" data-text="{nama}">
-                                        Nama
-                                    </button>
-                                    <button class="btn btn-primary btn-sm insert" type="button" data-text="{nik}">
-                                        NIK
-                                    </button>
-                                    <button class="btn btn-primary btn-sm insert" type="button" data-text="{alamat}">
-                                        Alamat
-                                    </button>
-                                    <button class="btn btn-primary btn-sm insert" type="button" data-text="{keperluan}">
-                                        Keperluan
-                                    </button>
-                                    <button class="btn btn-primary btn-sm insert" type="button"
-                                        data-text="{tanggal_surat}">
-                                        Tanggal Surat
-                                    </button>
-                                    <button class="btn btn-primary btn-sm insert" type="button" data-text="{nama_desa}">
-                                        Nama Desa
-                                    </button>
+                            <div class="col-md-12">
+                                <label class="form-label fw-medium  small mb-2">File Master (.doc /
+                                    .docx)</label>
+                                <input type="file" name="file_template"
+                                    class="form-control form-control-modern py-2 bg-white border" accept=".doc,.docx"
+                                    required>
+                                <div class="form-text text-muted mt-2" style="font-size: 0.75rem;">
+                                    <i class="bi bi-info-circle"></i> Pastikan dokumen memuat tag-tag variabel
+                                    kependudukan yang sesuai untuk automasi cetak.
                                 </div>
-                                <textarea id="editor" name="isi_template" class="form-control" rows="15"></textarea>
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-danger light" data-bs-dismiss="modal">
-                            <i class="fa fa-times"></i>
-                            Batal
-                        </button>
-                        <button type="submit" class="btn btn-primary">
-
-                            <i class="fa fa-save"></i>
-                            Simpan
-                        </button>
+                    <div class="modal-footer border-0 pt-0 pb-4 px-4 gap-2">
+                        <button type="button"
+                            class="btn btn-light rounded-3 px-4 fw-medium text-secondary flex-grow-1 flex-sm-grow-0"
+                            data-bs-dismiss="modal">Batal</button>
+                        <button type="submit"
+                            class="btn btn-primary rounded-3 px-4 fw-medium flex-grow-1 flex-sm-grow-0">Simpan
+                            Template</button>
                     </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
-    <script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
-    <script>
-        let editor;
-        ClassicEditor
-            .create(document.querySelector('#editor'))
-            .then(newEditor => {
-
-                editor = newEditor;
-            })
-            .catch(error => {
-                console.error(error);
-            });
-    </script>
-    <script>
-        document.querySelectorAll('.insert').forEach(button => {
-            button.addEventListener('click', function() {
-                editor.model.change(writer => {
-                    editor.model.insertContent(
-                        writer.createText(
-
-                            this.dataset.text
-
-                        )
-                    );
-                });
-            });
-        });
-    </script>
 @endsection

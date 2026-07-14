@@ -45,10 +45,21 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
+    <script>
+        window.csrfToken = "{{ csrf_token() }}";
+        window.validasiNikUrl = "{{ route('landing.validasi-nik') }}";
+        window.formPengajuanUrl = "{{ route('landing.form-pengajuan') }}";
+    </script>
+
+    <script>
+        window.cekStatusUrl = "{{ route('landing.cek-status') }}";
+    </script>
+
     <script src="{{ asset('assets/js/landing.js') }}"></script>
 
     @stack('scripts')
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 
 </html>

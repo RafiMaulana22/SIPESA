@@ -29,13 +29,13 @@ class PengajuanSuratModel extends Model
         return $this->belongsTo(JenisSuratModel::class, 'jenis_surat_id');
     }
 
-    public function lampiranPengajuans()
+    public function lampiran()
     {
         return $this->hasMany(LampiranPengajuanModel::class, 'pengajuan_surat_id');
     }
 
-    public function arsipSurat()
+    public function arsip()
     {
-        return $this->hasOne(ArsipSuratModel::class, 'pengajuan_surat_id');
+        return $this->hasOne(ArsipSuratModel::class);
     }
 }

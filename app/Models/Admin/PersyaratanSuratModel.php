@@ -13,11 +13,7 @@ class PersyaratanSuratModel extends Model
 
     protected $primaryKey = 'id';
 
-    protected $fillable = [
-        'jenis_surat_id',
-        'nama_persyaratan',
-        'is_required',
-    ];
+    protected $guarded = ['id'];
 
     protected $casts = [
         'is_required' => 'boolean',

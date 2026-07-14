@@ -21,6 +21,9 @@
 <script src="{{ asset('xhtml') }}/public/vendor/bootstrap-select/js/bootstrap-select.min.js" type="text/javascript"></script>
 <script src="{{ asset('xhtml') }}/public/js/custom.min.js" type="text/javascript"></script>
 <script src="{{ asset('xhtml') }}/public/js/deznav-init.js" type="text/javascript"></script>  --}}
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
     function togglePassword() {
         const passwordInput = document.getElementById("passwordConfirmation");

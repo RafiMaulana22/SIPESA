@@ -54,7 +54,7 @@
                             <div class="stat-icon bg-primary bg-opacity-10 text-primary mx-auto mb-3">
                                 <i class="bi bi-people-fill"></i>
                             </div>
-                            <h2 class="fw-bold text-dark mb-1">5.240</h2>
+                            <h2 class="fw-bold text-dark mb-1">{{ number_format($jumlahPenduduk) }}</h2>
                             <p class="text-muted small mb-0">Jumlah Penduduk</p>
                         </div>
                     </div>
@@ -66,7 +66,7 @@
                             <div class="stat-icon bg-success bg-opacity-10 text-success mx-auto mb-3">
                                 <i class="bi bi-file-earmark-text-fill"></i>
                             </div>
-                            <h2 class="fw-bold text-dark mb-1">12</h2>
+                            <h2 class="fw-bold text-dark mb-1">{{ $jumlahJenisSurat }}</h2>
                             <p class="text-muted small mb-0">Jenis Layanan Surat</p>
                         </div>
                     </div>
@@ -78,7 +78,7 @@
                             <div class="stat-icon bg-warning bg-opacity-10 text-warning-emphasis mx-auto mb-3">
                                 <i class="bi bi-hourglass-split"></i>
                             </div>
-                            <h2 class="fw-bold text-dark mb-1">245</h2>
+                            <h2 class="fw-bold text-dark mb-1">{{ $suratDiproses }}</h2>
                             <p class="text-muted small mb-0">Surat Diproses</p>
                         </div>
                     </div>
@@ -90,7 +90,7 @@
                             <div class="stat-icon bg-danger bg-opacity-10 text-danger mx-auto mb-3">
                                 <i class="bi bi-check-circle-fill"></i>
                             </div>
-                            <h2 class="fw-bold text-dark mb-1">1.235</h2>
+                            <h2 class="fw-bold text-dark mb-1">{{ $suratSelesai }}</h2>
                             <p class="text-muted small mb-0">Surat Selesai</p>
                         </div>
                     </div>
@@ -109,20 +109,24 @@
             </div>
 
             <div class="row g-4">
-                @foreach (['Surat Keterangan Domisili', 'Surat Keterangan Usaha', 'Surat Keterangan Tidak Mampu', 'Surat Pengantar SKCK', 'Surat Keterangan Kelahiran', 'Surat Keterangan Kematian'] as $surat)
+                @foreach ($jenisSurats as $surat)
                     <div class="col-md-6 col-lg-4">
                         <div class="card card-interactive h-100 border-0 shadow-sm rounded-4 p-3">
                             <div class="card-body d-flex flex-column align-items-start">
                                 <div class="icon-shape bg-primary bg-opacity-10 text-primary rounded-3 p-3 mb-4">
                                     <i class="bi bi-file-earmark-text fs-3"></i>
                                 </div>
-                                <h5 class="fw-bold text-dark mb-2">{{ $surat }}</h5>
+                                <span class="badge bg-light text-primary">
+
+                                    {{ $surat->kategoriSurat->nama_kategori }}
+
+                                </span>
+                                <h5 class="fw-bold text-dark mb-2">{{ $surat->nama_surat }}</h5>
                                 <p class="text-muted small mb-4" style="line-height: 1.5;">
-                                    Pengurusan permohonan dokumen administrasi secara digital, transparan, dan dapat
-                                    dipantau berkala.
+                                    {{ Str::limit($surat->deskripsi, 120) }}
                                 </p>
                                 <button class="btn btn-link text-primary p-0 fw-semibold mt-auto text-decoration-none small"
-                                    data-bs-toggle="modal" data-bs-target="#ajukanSuratModal">
+                                    data-bs-toggle="modal" data-bs-target="#ajukanSuratModal" data-id="{{ $surat->id }}">
                                     Ajukan Sekarang <i class="bi bi-arrow-right ms-1"></i>
                                 </button>
                             </div>
@@ -192,30 +196,29 @@
             </div>
 
             <div class="row g-4">
-                @for ($i = 1; $i <= 3; $i++)
+                @foreach ($beritas as $berita)
                     <div class="col-md-6 col-lg-4">
                         <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden card-interactive">
                             <div class="position-relative overflow-hidden" style="height: 220px;">
-                                <img src="https://placehold.co/600x350" class="w-100 h-100 object-fit-cover"
+                                <img src="{{ asset('storage/' . $berita->gambar) }}" class="w-100 h-100 object-fit-cover"
                                     alt="Gambar Berita">
                             </div>
                             <div class="card-body p-4">
                                 <div class="d-flex align-items-center gap-2 mb-2">
                                     <i class="bi bi-calendar4-event text-primary small"></i>
-                                    <small class="text-muted">24 Juni 2026</small>
+                                    <small class="text-muted">{{ $berita->created_at->translatedFormat('d F Y') }}</small>
                                 </div>
                                 <h5 class="fw-bold text-dark line-clamp-2 mb-2">
-                                    <a href="#" class="text-dark text-decoration-none link-primary-hover">Judul
-                                        Publikasi Agenda Berita Desa {{ $i }}</a>
+                                    <a href="{{ route('landing.berita.show', $berita->slug) }}"
+                                        class="text-dark text-decoration-none link-primary-hover">{{ $berita->judul }}</a>
                                 </h5>
                                 <p class="text-muted small mb-0" style="line-height: 1.5;">
-                                    Penjelasan ringkas poin berita teraktual yang disajikan secara akurat dan informatif
-                                    kepada warga desa...
+                                    {{ Str::limit(strip_tags($berita->isi), 120) }}
                                 </p>
                             </div>
                         </div>
                     </div>
-                @endfor
+                @endforeach
             </div>
         </div>
     </section>

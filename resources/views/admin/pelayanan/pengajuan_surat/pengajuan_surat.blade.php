@@ -265,26 +265,50 @@
                                                     class="badge bg-success-subtle text-success border border-success-subtle px-2.5 py-1.5 rounded-2 fw-medium">Selesai</span>
                                             @else
                                                 <span
-                                                    class="badge bg-danger-subtle text-danger border border-danger-subtle px-2.5 py-1.5 rounded-2 fw-medium">Selesai</span>
+                                                    class="badge bg-danger-subtle text-danger border border-danger-subtle px-2.5 py-1.5 rounded-2 fw-medium">
+                                                    Ditolak
+                                                </span>
                                             @endif
                                         </td>
                                         <td class="pe-4 text-end">
                                             <div class="d-inline-flex gap-1.5">
-                                                @if (
-                                                    $pengajuan->status == 'menunggu' &&
-                                                        $pengajuan->nomor_antrian == $pengajuans->where('status', 'menunggu')->min('nomor_antrian'))
+                                                @if ($pengajuan->status == 'menunggu')
+                                                    @if ($pengajuan->nomor_antrian == $pengajuans->where('status', 'menunggu')->min('nomor_antrian'))
+                                                        <form
+                                                            action="{{ route('pengajuan-surat.mulai-proses', $pengajuan->id) }}"
+                                                            method="POST" class="d-inline">
+
+                                                            @csrf
+                                                            @method('PUT')
+
+                                                            <button type="submit" class="btn btn-primary btn-sm">
+                                                                <i class="bi bi-gear"></i> Proses
+                                                            </button>
+
+                                                        </form>
+                                                    @else
+                                                        <button class="btn btn-secondary btn-sm" disabled>
+                                                            <i class="bi bi-lock"></i> Menunggu FIFO
+                                                        </button>
+                                                    @endif
+                                                @elseif($pengajuan->status == 'diproses')
                                                     <a href="{{ route('pengajuan-surat.proses', $pengajuan->id) }}"
-                                                        class="btn btn-sm btn-primary px-3 rounded-2 fw-medium shadow-none transition-base">
-                                                        <i class="bi bi-gear me-1"></i> Proses
+                                                        class="btn btn-warning btn-sm">
+                                                        <i class="bi bi-gear"></i> Proses
                                                     </a>
-                                                @elseif($pengajuan->status == 'menunggu')
-                                                    <button class="btn btn-secondary btn-sm" disabled>
-                                                        <i class="bi bi-lock"></i> Menunggu FIFO
-                                                    </button>
-                                                @else
-                                                {{--  {{ route('admin.pengajuan.show', $pengajuan->id) }}  --}}
-                                                    <a href=""
-                                                        class="btn btn-outline-primary btn-sm">
+                                                @elseif($pengajuan->status == 'selesai')
+                                                    <a href="{{ route('pengajuan-surat.detail', $pengajuan->id) }}"
+                                                        class="btn btn-info btn-sm">
+                                                        <i class="bi bi-eye"></i> Detail
+                                                    </a>
+
+                                                    <a href="{{ route('pengajuan-surat.preview', $pengajuan->id) }}"
+                                                        class="btn btn-success btn-sm">
+                                                        <i class="bi bi-file-earmark-pdf"></i> Preview
+                                                    </a>
+                                                @elseif($pengajuan->status == 'ditolak')
+                                                    <a href="{{ route('pengajuan-surat.detail', $pengajuan->id) }}"
+                                                        class="btn btn-danger btn-sm">
                                                         <i class="bi bi-eye"></i> Detail
                                                     </a>
                                                 @endif

@@ -28,7 +28,7 @@
                         Beranda
                     </a>
                 </li>
-                <li class="nav-item">
+                {{--  <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('landing.profil') ? 'active' : '' }}"
                         href="{{ route('landing.profil') }}">
                         Profil Desa
@@ -45,7 +45,7 @@
                         href="{{ route('landing.berita') }}">
                         Berita
                     </a>
-                </li>
+                </li>  --}}
             </ul>
 
             <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2 mt-3 mt-lg-0 ms-lg-3">

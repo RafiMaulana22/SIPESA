@@ -11,7 +11,7 @@ class JenisSuratController extends Controller
 {
     public function index()
     {
-        $jenis = JenisSuratModel::with('kategoriSurat')
+        $jenis = JenisSuratModel::with('kategoriSurat', 'persyaratan')
                     ->latest()
                     ->get();
 

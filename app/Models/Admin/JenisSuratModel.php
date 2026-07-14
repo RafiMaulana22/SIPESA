@@ -31,7 +31,7 @@ class JenisSuratModel extends Model
 
     public function persyaratan()
     {
-        return $this->hasMany(PersyaratanSuratModel::class);
+        return $this->hasMany(PersyaratanSuratModel::class, 'jenis_surat_id');
     }
 
     public function kategoriSurat()

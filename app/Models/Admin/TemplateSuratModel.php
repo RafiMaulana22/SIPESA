@@ -13,11 +13,7 @@ class TemplateSuratModel extends Model
 
     protected $primaryKey = 'id';
 
-    protected $fillable = [
-        'jenis_surat_id',
-        'judul_surat',
-        'isi_template',
-    ];
+    protected $guarded = ['id'];
 
     public function jenisSurat()
     {

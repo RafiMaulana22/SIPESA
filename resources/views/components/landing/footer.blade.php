@@ -18,9 +18,9 @@
                 </h6>
                 <ul class="list-unstyled">
                     <li><a href="{{ route('landing.home') }}" class="footer-link">Beranda</a></li>
-                    <li><a href="{{ route('landing.profil') }}" class="footer-link">Profil Desa</a></li>
+                    {{--  <li><a href="{{ route('landing.profil') }}" class="footer-link">Profil Desa</a></li>
                     <li><a href="{{ route('landing.layanan') }}" class="footer-link">Layanan Surat</a></li>
-                    <li><a href="{{ route('landing.berita') }}" class="footer-link">Berita</a></li>
+                    <li><a href="{{ route('landing.berita') }}" class="footer-link">Berita</a></li>  --}}
                 </ul>
             </div>
 

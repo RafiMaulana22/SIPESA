@@ -13,15 +13,15 @@ class ArsipSuratModel extends Model
 
     protected $primaryKey = 'id';
 
-    protected $fillable = ['pengajuan_surat_id', 'nomor_surat', 'tanggal_surat', 'file_pdf', 'created_by'];
+    protected $guarded = ['id'];
 
     protected $casts = [
         'tanggal_surat' => 'date',
     ];
 
-    public function pengajuanSurat()
+    public function pengajuan()
     {
-        return $this->belongsTo(PengajuanSuratModel::class, 'pengajuan_surat_id');
+        return $this->belongsTo(PengajuanSuratModel::class);
     }
 
     // public function user()

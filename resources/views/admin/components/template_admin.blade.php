@@ -756,6 +756,8 @@
     ***********************************-->
     <!-- Required vendors -->
     @include('admin.layout.script')
+
+    @stack('scripts')
 </body>
 
 </html>

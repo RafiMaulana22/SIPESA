@@ -18,7 +18,7 @@
                 <div class="card-body p-4 d-flex align-items-center justify-content-between">
                     <div>
                         <span class="text-muted small d-block mb-1 fw-medium">Total Arsip</span>
-                        <h2 class="fw-bold m-0">1.254</h2>
+                        <h2 class="fw-bold m-0">{{ $totalArsip }}</h2>
                     </div>
                     <div class="stat-icon bg-primary bg-opacity-10 text-primary rounded-4 p-3 d-flex align-items-center justify-content-center"
                         style="width: 52px; height: 52px;">
@@ -33,7 +33,7 @@
                 <div class="card-body p-4 d-flex align-items-center justify-content-between">
                     <div>
                         <span class="text-muted small d-block mb-1 fw-medium">Arsip Bulan Ini</span>
-                        <h2 class="fw-bold m-0">84</h2>
+                        <h2 class="fw-bold m-0">{{ $arsipBulan }}</h2>
                     </div>
                     <div class="stat-icon bg-success bg-opacity-10 text-success rounded-4 p-3 d-flex align-items-center justify-content-center"
                         style="width: 52px; height: 52px;">
@@ -48,7 +48,7 @@
                 <div class="card-body p-4 d-flex align-items-center justify-content-between">
                     <div>
                         <span class="text-muted small d-block mb-1 fw-medium">Arsip Hari Ini</span>
-                        <h2 class="fw-bold m-0">7</h2>
+                        <h2 class="fw-bold m-0">{{ $arsipHari }}</h2>
                     </div>
                     <div class="stat-icon bg-warning bg-opacity-10 text-warning-emphasis rounded-4 p-3 d-flex align-items-center justify-content-center"
                         style="width: 52px; height: 52px;">
@@ -63,7 +63,7 @@
                 <div class="card-body p-4 d-flex align-items-center justify-content-between">
                     <div>
                         <span class="text-muted small d-block mb-1 fw-medium">Jenis Surat</span>
-                        <h2 class="fw-bold m-0">12</h2>
+                        <h2 class="fw-bold m-0">{{ $totalJenis }}</h2>
                     </div>
                     <div class="stat-icon bg-info bg-opacity-10 text-info rounded-4 p-3 d-flex align-items-center justify-content-center"
                         style="width: 52px; height: 52px;">
@@ -74,41 +74,75 @@
         </div>
     </div>
 
-    <div class="card">
-        <div class="card-body">
-            <div class="row g-3">
-                <div class="col-lg-4">
-                    <div class="form-group mb-4">
-                        <select class="form-control default-select">
-                            <option selected>Semua Kategori</option>
-                            <option>Administrasi Kependudukan</option>
-                            <option>Perizinan</option>
-                        </select>
-                    </div>
-                </div>
+    <form method="GET" action="{{ route('arsip-digital.index') }}">
+        <div class="card">
+            <div class="card-body">
 
-                <div class="col-lg-4">
-                    <div class="form-group mb-4">
-                        <select class="form-control default-select">
-                            <option selected>Semua Jenis Surat</option>
-                            <option>Surat Keterangan Domisili</option>
-                            <option>Surat Keterangan Usaha</option>
-                            <option>Surat Keterangan Tidak Mampu</option>
-                        </select>
-                    </div>
-                </div>
+                <div class="row g-3">
+                    <div class="col-lg-4">
+                        <div class="form-group mb-4">
+                            <select class="form-control default-select" name="kategori">
+                                <option value="" selected>Semua Kategori</option>
+                                @foreach ($kategoriSurats as $kategori)
+                                    <option value="{{ $kategori->id }}" @selected(request('kategori') == $kategori->id)>
 
-                <div class="col-lg-4">
-                    <div class="form-group mb-4">
-                        <select class="form-control default-select">
-                            <option selected>2026</option>
-                            <option>2025</option>
-                        </select>
+                                        {{ $kategori->nama_kategori }}
+
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="form-group mb-4">
+                            <select class="form-control default-select" name="jenis">
+                                <option selected value="">Semua Jenis Surat</option>
+                                @foreach ($jenisSurats as $jenis)
+                                    <option value="{{ $jenis->id }}" @selected(request('jenis') == $jenis->id)>
+
+                                        {{ $jenis->nama_surat }}
+
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="form-group mb-4">
+                            <select class="form-control default-select" name="tahun">
+                                <option selected value="">Semua Tahun</option>
+                                @for ($tahun = date('Y'); $tahun >= 2024; $tahun--)
+                                    <option value="{{ $tahun }}" @selected(request('tahun') == $tahun)>
+
+                                        {{ $tahun }}
+
+                                    </option>
+                                @endfor
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+
+                        <button type="submit" class="btn btn-primary">
+
+                            <i class="bi bi-funnel"></i>
+                            Filter
+
+                        </button>
+
+                        <a href="{{ route('arsip-digital.index') }}" class="btn btn-secondary">
+
+                            Reset
+
+                        </a>
+
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </form>
 
     <div class="row">
         <div class="col-12">
@@ -131,22 +165,23 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @for ($i = 1; $i <= 5; $i++)
+                                @forelse($arsips as $arsip)
                                     <tr>
-                                        <td class="ps-4 text-muted fw-medium">{{ $i }}</td>
+                                        <td class="ps-4 text-muted fw-medium">{{ $loop->iteration }}</td>
                                         <td class="fw-semibold">
-                                            470/{{ 100 + $i }}/435.312/{{ date('Y') }}
+                                            {{ $arsip->nomor_surat }}
                                         </td>
-                                        <td class="text-muted small">28 Juni 2026</td>
+                                        <td class="text-muted small">
+                                            {{ $arsip->tanggal_surat->translatedFormat('d F Y') }}</td>
                                         <td>
                                             <div class="d-flex flex-column">
-                                                <span class="fw-bold mb-0.5">Ahmad Fauzi</span>
+                                                <span class="fw-bold mb-0.5">{{ $arsip->pengajuan->penduduk->nama }}</span>
                                                 <small class="text-muted" style="font-size: 0.75rem;">NIK:
-                                                    35291234567890{{ $i }}</small>
+                                                    {{ $arsip->pengajuan->penduduk->nik }}</small>
                                             </div>
                                         </td>
                                         <td>
-                                            <span class=fw-medium">Surat Keterangan Domisili</span>
+                                            <span class=fw-medium">{{ $arsip->pengajuan->jenisSurat->kategoriSurat->nama_kategori }}</span>
                                         </td>
                                         <td>
                                             <span
@@ -156,20 +191,31 @@
                                         </td>
                                         <td class="pe-4 text-end">
                                             <div class="d-inline-flex gap-1.5">
-                                                <button
+                                                <a target="_blank" href="{{ Storage::url($arsip->file_pdf) }}"
                                                     class="btn btn-sm btn-light border text-secondary px-2.5 py-1.5 rounded-2 shadow-none"
                                                     title="Lihat Dokumen">
                                                     <i class="bi bi-eye"></i>
-                                                </button>
-                                                <button
+                                                </a>
+                                                <a href="{{ Storage::url($arsip->file_pdf) }}" download
                                                     class="btn btn-sm btn-light border text-primary px-2.5 py-1.5 rounded-2 shadow-none"
                                                     title="Unduh Berkas">
                                                     <i class="bi bi-download"></i>
-                                                </button>
+                                                </a>
                                             </div>
                                         </td>
                                     </tr>
-                                @endfor
+                                @empty
+
+                                    <tr>
+
+                                        <td colspan="7" class="text-center py-5">
+
+                                            Belum terdapat arsip surat.
+
+                                        </td>
+
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>

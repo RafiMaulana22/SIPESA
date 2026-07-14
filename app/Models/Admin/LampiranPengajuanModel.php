@@ -17,11 +17,11 @@ class LampiranPengajuanModel extends Model
 
     public function pengajuan()
     {
-        return $this->belongsTo(PengajuanSuratModel::class);
+        return $this->belongsTo(PengajuanSuratModel::class, 'pengajuan_surat_id');
     }
 
     public function persyaratan()
     {
-        return $this->belongsTo(PersyaratanSuratModel::class);
+        return $this->belongsTo(PersyaratanSuratModel::class, 'persyaratan_surat_id');
     }
 }

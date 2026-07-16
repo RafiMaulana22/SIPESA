@@ -54,11 +54,25 @@
                     Daftar Rekam Data Kependudukan
                 </h5>
             </div>
-            <button
-                class="btn btn-primary rounded-3 px-4 fw-medium shadow-none transition-base d-flex align-items-center gap-2"
-                data-bs-toggle="modal" data-bs-target="#modalTambah">
-                <i class="bi bi-plus-circle-fill"></i> Tambah Penduduk
-            </button>
+            <div class="d-flex gap-2">
+
+                <button class="btn btn-success rounded-3 px-4 fw-medium shadow-none" data-bs-toggle="modal"
+                    data-bs-target="#modalImport">
+
+                    <i class="bi bi-file-earmark-excel-fill"></i>
+                    Import Excel
+
+                </button>
+
+                <button class="btn btn-primary rounded-3 px-4 fw-medium shadow-none" data-bs-toggle="modal"
+                    data-bs-target="#modalTambah">
+
+                    <i class="bi bi-plus-circle-fill"></i>
+                    Tambah Penduduk
+
+                </button>
+
+            </div>
         </div>
 
         <div class="table-responsive px-2">
@@ -139,9 +153,9 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label text-muted small fw-medium mb-1">Nomor Induk Kependudukan
-                                    (NIK)</label>
-                                <input type="text"
-                                    class="form-control bg-light border-0 py-2.5  fw-bold rounded-3"
+                                    (NIK)
+                                </label>
+                                <input type="text" class="form-control bg-light border-0 py-2.5  fw-bold rounded-3"
                                     value="{{ $get->nik }}" readonly>
                             </div>
                             <div class="col-md-6">
@@ -151,8 +165,7 @@
                             </div>
                             <div class="col-md-12">
                                 <label class="form-label text-muted small fw-medium mb-1">Nama Lengkap Sesuai KTP</label>
-                                <input type="text"
-                                    class="form-control bg-light border-0 py-2.5  fw-semibold rounded-3"
+                                <input type="text" class="form-control bg-light border-0 py-2.5  fw-semibold rounded-3"
                                     value="{{ $get->nama }}" readonly>
                             </div>
                             <div class="col-md-6">
@@ -194,22 +207,20 @@
                             </div>
                             <div class="col-md-2 col-6">
                                 <label class="form-label text-muted small fw-medium mb-1">RT</label>
-                                <input type="text"
-                                    class="form-control bg-light border-0 py-2.5 text-center  rounded-3"
+                                <input type="text" class="form-control bg-light border-0 py-2.5 text-center  rounded-3"
                                     value="{{ $get->rt }}" readonly>
                             </div>
                             <div class="col-md-2 col-6">
                                 <label class="form-label text-muted small fw-medium mb-1">RW</label>
-                                <input type="text"
-                                    class="form-control bg-light border-0 py-2.5 text-center  rounded-3"
+                                <input type="text" class="form-control bg-light border-0 py-2.5 text-center  rounded-3"
                                     value="{{ $get->rw }}" readonly>
                             </div>
                             <div class="col-md-12">
-                                <label class="form-label text-muted small fw-medium mb-1">Status Kependudukan</label>
+                                <label class="form-label text-muted small fw-medium mb-1">Status Perkawinan</label>
                                 <div>
                                     <span
                                         class="badge bg-secondary bg-opacity-10  border border-secondary border-opacity-10 px-3 py-2 rounded-2 fw-medium">
-                                        Status: {{ $get->status_penduduk ?? 'Tetap' }}
+                                        Status: {{ $get->status_perkawinan ?? '-' }}
                                     </span>
                                 </div>
                             </div>
@@ -280,8 +291,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-medium  small mb-2">Jenis Kelamin</label>
-                                    <select name="jenis_kelamin" class="form-control default-select"
-                                        required>
+                                    <select name="jenis_kelamin" class="form-control default-select" required>
                                         <option value="L" {{ $get->jenis_kelamin == 'L' ? 'selected' : '' }}>
                                             Laki-Laki</option>
                                         <option value="P" {{ $get->jenis_kelamin == 'P' ? 'selected' : '' }}>
@@ -290,8 +300,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-medium  small mb-2">Agama</label>
-                                    <select name="agama" class="form-control default-select"
-                                        required>
+                                    <select name="agama" class="form-control default-select" required>
                                         @foreach (['Islam', 'Kristen', 'Katolik', 'Hindu', 'Budha', 'Konghucu'] as $agm)
                                             <option value="{{ $agm }}"
                                                 {{ $get->agama == $agm ? 'selected' : '' }}>{{ $agm }}</option>
@@ -332,13 +341,11 @@
                                         oninput="this.value=this.value.replace(/[^0-9]/g,'')">
                                 </div>
                                 <div class="col-md-12">
-                                    <label class="form-label fw-medium  small mb-2">Status Klasifikasi
-                                        Penduduk</label>
-                                    <select name="status_penduduk"
-                                        class="form-control default-select" required>
-                                        @foreach (['Tetap', 'Pendatang', 'Pindah', 'Meninggal'] as $stts)
+                                    <label class="form-label fw-medium  small mb-2">Status Perkawinan</label>
+                                    <select name="status_perkawinan" class="form-control default-select" required>
+                                        @foreach (['Belum Menikah', 'Menikah', 'Cerai Hidup', 'Cerai Mati'] as $stts)
                                             <option value="{{ $stts }}"
-                                                {{ $get->status_penduduk == $stts ? 'selected' : '' }}>{{ $stts }}
+                                                {{ $get->status_perkawinan == $stts ? 'selected' : '' }}>{{ $stts }}
                                             </option>
                                         @endforeach
                                     </select>
@@ -446,8 +453,7 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-medium  small mb-2">Jenis Kelamin</label>
-                                <select name="jenis_kelamin" class="form-control default-select"
-                                    required>
+                                <select name="jenis_kelamin" class="form-control default-select" required>
                                     <option value="" selected disabled>-- Pilih Jenis Kelamin --</option>
                                     <option value="L">Laki-Laki</option>
                                     <option value="P">Perempuan</option>
@@ -496,14 +502,13 @@
                                     oninput="this.value=this.value.replace(/[^0-9]/g,'')">
                             </div>
                             <div class="col-md-12">
-                                <label class="form-label fw-medium  small mb-2">Status Domisili Warga</label>
-                                <select name="status_penduduk" class="form-control default-select"
-                                    required>
+                                <label class="form-label fw-medium  small mb-2">Status Perkawinan</label>
+                                <select name="status_perkawinan" class="form-control default-select" required>
                                     <option value="" selected disabled>-- Pilih Status --</option>
-                                    <option value="Tetap">Tetap (Warga Asli)</option>
-                                    <option value="Pendatang">Pendatang</option>
-                                    <option value="Pindah">Pindah Wilayah</option>
-                                    <option value="Meninggal">Meninggal Dunia</option>
+                                    <option value="Belum Menikah">Belum Menikah</option>
+                                    <option value="Menikah">Menikah</option>
+                                    <option value="Cerai Hidup">Cerai Hidup</option>
+                                    <option value="Cerai Mati">Cerai Mati</option>
                                 </select>
                             </div>
                         </div>
@@ -517,6 +522,79 @@
                             Penduduk</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    {{--  Modal Import Excel  --}}
+    <div class="modal fade" id="modalImport" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4 shadow">
+
+                <form action="{{ route('penduduk.import') }}" method="POST" enctype="multipart/form-data">
+
+                    @csrf
+
+                    <div class="modal-header border-0">
+
+                        <h5 class="fw-bold">
+                            Import Data Penduduk
+                        </h5>
+
+                        <button type="button" class="btn-close" data-bs-dismiss="modal">
+                        </button>
+
+                    </div>
+
+                    <div class="modal-body">
+
+                        <div class="alert alert-info">
+
+                            Upload file Excel (.xlsx atau .xls)
+                            yang berisi data penduduk.
+
+                        </div>
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+
+                                File Excel
+
+                            </label>
+
+                            <input type="file" class="form-control" name="file" accept=".xlsx,.xls" required>
+
+                        </div>
+
+                        <a href="{{ asset('template/template_penduduk.xlsx') }}" class="btn btn-link p-0">
+
+                            Download Template Excel
+
+                        </a>
+
+                    </div>
+
+                    <div class="modal-footer border-0">
+
+                        <button class="btn btn-light" data-bs-dismiss="modal" type="button">
+
+                            Batal
+
+                        </button>
+
+                        <button class="btn btn-success">
+
+                            <i class="bi bi-upload"></i>
+
+                            Import
+
+                        </button>
+
+                    </div>
+
+                </form>
+
             </div>
         </div>
     </div>

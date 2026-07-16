@@ -22,7 +22,10 @@ class PengajuanSuratController extends Controller
         $penduduk = PendudukModel::where('nik', $request->nik)->first();
 
         if (!$penduduk) {
-            return back()->withInput()->with('error', 'NIK tidak ditemukan pada database penduduk.');
+            return response()->json([
+                'status' => false,
+                'message' => 'NIK tidak ditemukan pada database penduduk.',
+            ]);
         }
 
         return response()->json([

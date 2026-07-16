@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Imports\PendudukImport;
 use App\Models\Admin\PendudukModel;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PendudukController extends Controller
 {
@@ -28,9 +30,23 @@ class PendudukController extends Controller
             'rt' => 'required|max:3',
             'rw' => 'required|max:3',
             'no_hp' => 'nullable|max:20',
-            'status_penduduk' => 'required|string|max:50',
+            'status_perkawinan' => 'required|string|max:50',
             'agama' => 'nullable|string|max:50',
             'pekerjaan' => 'nullable|string|max:100',
+        ], [
+            'nik.required' => 'NIK wajib diisi.',
+            'nik.digits' => 'NIK harus terdiri dari 16 digit.',
+            'nik.unique' => 'NIK sudah terdaftar.',
+            'no_kk.required' => 'No KK wajib diisi.',
+            'no_kk.digits' => 'No KK harus terdiri dari 16 digit.',
+            'nama.required' => 'Nama wajib diisi.',
+            'tempat_lahir.required' => 'Tempat lahir wajib diisi.',
+            'tanggal_lahir.required' => 'Tanggal lahir wajib diisi.',
+            'jenis_kelamin.required' => 'Jenis kelamin wajib dipilih.',
+            'alamat.required' => 'Alamat wajib diisi.',
+            'rt.required' => 'RT wajib diisi.',
+            'rw.required' => 'RW wajib diisi.',
+            'status_perkawinan.required' => 'Status perkawinan wajib dipilih.',
         ]);
 
         PendudukModel::create($validated);
@@ -60,9 +76,23 @@ class PendudukController extends Controller
             'rt' => 'required|max:3',
             'rw' => 'required|max:3',
             'no_hp' => 'nullable|max:20',
-            'status_penduduk' => 'required|string|max:50',
+            'status_perkawinan' => 'required|string|max:50',
             'agama' => 'nullable|string|max:50',
             'pekerjaan' => 'nullable|string|max:100',
+        ], [
+            'nik.required' => 'NIK wajib diisi.',
+            'nik.digits' => 'NIK harus terdiri dari 16 digit.',
+            'nik.unique' => 'NIK sudah terdaftar.',
+            'no_kk.required' => 'No KK wajib diisi.',
+            'no_kk.digits' => 'No KK harus terdiri dari 16 digit.',
+            'nama.required' => 'Nama wajib diisi.',
+            'tempat_lahir.required' => 'Tempat lahir wajib diisi.',
+            'tanggal_lahir.required' => 'Tanggal lahir wajib diisi.',
+            'jenis_kelamin.required' => 'Jenis kelamin wajib dipilih.',
+            'alamat.required' => 'Alamat wajib diisi.',
+            'rt.required' => 'RT wajib diisi.',
+            'rw.required' => 'RW wajib diisi.',
+            'status_perkawinan.required' => 'Status perkawinan wajib dipilih.',
         ]);
 
         $penduduk->update($validated);
@@ -77,5 +107,19 @@ class PendudukController extends Controller
         $penduduk->delete();
 
         return redirect()->back()->with('success', 'Data penduduk berhasil dihapus.');
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv',
+        ]);
+
+        $file = $request->file('file');
+
+        // Import the data using the PendudukImport class
+        Excel::import(new PendudukImport, $file);
+
+        return redirect()->back()->with('success', 'Data penduduk berhasil diimpor.');
     }
 }

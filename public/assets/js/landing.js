@@ -36,8 +36,15 @@ function validasiNik() {
             console.log(res);
 
             if (!res.status) {
-                document.getElementById("nikError").innerHTML =
-                    "NIK tidak ditemukan";
+                document.getElementById("nikError").innerHTML = "";
+
+                Swal.fire({
+                    icon: "error",
+                    title: "NIK Tidak Ditemukan",
+                    text: "NIK yang Anda masukkan tidak terdaftar pada database penduduk.",
+                    confirmButtonText: "OK",
+                });
+
                 return;
             }
 
@@ -79,8 +86,14 @@ function validasiNik() {
                 `;
             });
         })
-        .catch((err) => {
+        .catch(async (err) => {
             console.log(err);
+
+            Swal.fire({
+                icon: "error",
+                title: "NIK Tidak Valid",
+                text: "Pastikan NIK terdiri dari 16 digit dan telah terdaftar.",
+            });
         });
 }
 

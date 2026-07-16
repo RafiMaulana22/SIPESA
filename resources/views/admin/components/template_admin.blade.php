@@ -3,7 +3,8 @@
 
 <head>
     <!-- Title -->
-    <title> {{ ucwords(trim(str_replace(['_', '-', '.', 'index'], ' ', Route::currentRouteName()))) }} Admin SIPESA </title>
+    <title> {{ ucwords(trim(str_replace(['_', '-', '.', 'index'], ' ', Route::currentRouteName()))) }} Admin SIPESA
+    </title>
 
     <!-- Meta -->
     <meta charset="utf-8">
@@ -739,8 +740,11 @@
         ***********************************-->
         <footer class="footer">
             <div class="copyright">
-                <p>Copyright © Designed &amp; Developed by <a href="http://dexignzone.com/"
-                        target="_blank">DexignZone</a> 2023</p>
+                <p>
+                    Copyright © Designed &amp; Developed by
+                    <a href="" target="_blank">Turbo Team</a>
+                    2026
+                </p>
             </div>
         </footer>
         <!--**********************************

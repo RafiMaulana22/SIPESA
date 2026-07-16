@@ -53,6 +53,7 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard
 
 //penduduk
 Route::resource('penduduk', PendudukController::class);
+Route::post('/penduduk/import', [PendudukController::class, 'import'])->name('penduduk.import');
 
 //KATEGORI SURAT
 Route::resource('kategori-surat', KategoriSuratController::class);

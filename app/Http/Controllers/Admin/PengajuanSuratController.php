@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin\ArsipSuratModel;
 use App\Models\Admin\JenisSuratModel;
 use App\Models\Admin\LampiranPengajuanModel;
 use App\Models\Admin\PengajuanSuratModel;
@@ -35,7 +36,7 @@ class PengajuanSuratController extends Controller
             $query->whereDate('tanggal_pengajuan', $request->tanggal);
         }
 
-        $pengajuans = $query->orderBy('nomor_antrian')->paginate(10);
+        $pengajuans = $query->orderBy('nomor_antrian')->paginate();
 
         return view('admin.pelayanan.pengajuan_surat.pengajuan_surat', [
             'pengajuans' => $pengajuans,
@@ -50,7 +51,15 @@ class PengajuanSuratController extends Controller
 
     public function proses($id)
     {
-        $pengajuan = PengajuanSuratModel::with(['penduduk', 'jenisSurat.kategoriSurat', 'lampiran.persyaratan'])->findOrFail($id);
+        $pengajuan = PengajuanSuratModel::with([
+            'penduduk',
+            'jenisSurat.kategoriSurat',
+            'lampiran' => function ($q) {
+                $q->whereHas('persyaratan', function ($q2) {
+                    $q2->where('tipe_input', 'file');
+                })->with('persyaratan');
+            },
+        ])->findOrFail($id);
 
         return view('admin.pelayanan.pengajuan_surat.proses', compact('pengajuan'));
     }
@@ -82,7 +91,7 @@ class PengajuanSuratController extends Controller
     public function setujui(Request $request, $id, WordTemplateService $wordService)
     {
         DB::transaction(function () use ($request, $id, $wordService) {
-            $pengajuan = PengajuanSuratModel::with(['penduduk', 'jenisSurat'])->findOrFail($id);
+            $pengajuan = PengajuanSuratModel::with(['penduduk', 'jenisSurat', 'lampiran.persyaratan'])->findOrFail($id);
 
             // Generate surat
             $namaFile = $wordService->generate($pengajuan);
@@ -100,7 +109,7 @@ class PengajuanSuratController extends Controller
                 'nomor_surat' => $pengajuan->kode_pengajuan,
                 'tanggal_surat' => now(),
                 'file_pdf' => 'hasil_surat/' . $namaFile,
-                'created_by' => auth()->id(),
+                'created_by' => auth()->id() ?? 1,
             ]);
         });
 
@@ -155,7 +164,15 @@ class PengajuanSuratController extends Controller
 
     public function detail($id)
     {
-        $pengajuan = PengajuanSuratModel::with(['penduduk', 'jenisSurat.kategoriSurat', 'lampiran.persyaratan'])->findOrFail($id);
+        $pengajuan = PengajuanSuratModel::with([
+            'penduduk',
+            'jenisSurat.kategoriSurat',
+            'lampiran' => function ($q) {
+                $q->whereHas('persyaratan', function ($q2) {
+                    $q2->where('tipe_input', 'file');
+                })->with('persyaratan');
+            },
+        ])->findOrFail($id);
 
         return view('admin.pelayanan.pengajuan_surat.detail', compact('pengajuan'));
     }

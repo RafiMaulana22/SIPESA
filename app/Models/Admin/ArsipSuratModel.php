@@ -21,7 +21,7 @@ class ArsipSuratModel extends Model
 
     public function pengajuan()
     {
-        return $this->belongsTo(PengajuanSuratModel::class);
+        return $this->belongsTo(PengajuanSuratModel::class, 'pengajuan_surat_id');
     }
 
     // public function user()

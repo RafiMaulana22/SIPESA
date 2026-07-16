@@ -1,6 +1,5 @@
 const formValidasi = document.getElementById("formValidasiNik");
 const formPengajuan = document.getElementById("formPengajuan");
-const formUsaha = document.getElementById("formUsaha");
 
 // FORM VALIDASI NIK
 formValidasi.addEventListener("submit", function (e) {
@@ -166,7 +165,13 @@ function kirimPengajuan() {
                     "none";
                 document.getElementById("formPengajuan").style.display = "none";
             } else {
-                alert("Pengajuan gagal.");
+                console.log(res);
+
+                Swal.fire({
+                    icon: "error",
+                    title: "Pengajuan Gagal",
+                    text: res.message ?? "Terjadi kesalahan.",
+                });
             }
         })
         .catch(async (err) => {
@@ -228,54 +233,69 @@ jenisSurat.addEventListener("change", function () {
     fetch("/form-pengajuan/" + id)
         .then((response) => response.json())
         .then((res) => {
-            // tampil/sembunyikan form usaha
-
-            const formUsaha = document.getElementById("formUsaha");
-
-            if (res.jenis_surat.nama_surat.toLowerCase().includes("usaha")) {
-                formUsaha.style.display = "block";
-            } else {
-                formUsaha.style.display = "none";
-
-                document.getElementById("nama_usaha").value = "";
-                document.getElementById("jenis_usaha").value = "";
-            }
-
             let html = "";
 
             if (res.persyaratan.length == 0) {
                 html = `
-                <div class="alert alert-warning mb-0">
-                    Jenis surat ini tidak memiliki persyaratan.
-                </div>
+                    <div class="alert alert-warning mb-0">
+                        Jenis surat ini tidak memiliki persyaratan.
+                    </div>
                 `;
             } else {
                 res.persyaratan.forEach(function (item) {
-                    html += `
-                    <div class="mb-3">
+                    if (item.tipe_input == "file") {
+                        html += `
+                            <div class="mb-3">
 
-                        <label class="form-label fw-semibold">
+                                <label class="form-label fw-semibold">
 
-                            ${item.nama_persyaratan}
+                                    ${item.nama_persyaratan}
 
-                            ${
-                                item.is_required
-                                    ? '<span class="text-danger">*</span>'
-                                    : '<span class="badge bg-secondary ms-2">Opsional</span>'
-                            }
+                                    ${
+                                        item.is_required
+                                            ? '<span class="text-danger">*</span>'
+                                            : '<span class="badge bg-secondary ms-2">Opsional</span>'
+                                    }
 
-                        </label>
+                                </label>
 
-                        <input
-                            type="file"
-                            class="form-control"
-                            name="lampiran[${item.id}]"
-                            accept=".pdf,.jpg,.jpeg,.png"
-                            ${item.is_required ? "required" : ""}
-                        >
+                                <input
+                                    type="file"
+                                    class="form-control"
+                                    name="lampiran[${item.id}]"
+                                    accept=".pdf,.jpg,.jpeg,.png"
+                                    ${item.is_required ? "required" : ""}
+                                >
 
-                    </div>
-                    `;
+                            </div>
+                        `;
+                    } else {
+                        html += `
+                            <div class="mb-3">
+
+                                <label class="form-label fw-semibold">
+
+                                    ${item.nama_persyaratan}
+
+                                    ${
+                                        item.is_required
+                                            ? '<span class="text-danger">*</span>'
+                                            : '<span class="badge bg-secondary ms-2">Opsional</span>'
+                                    }
+
+                                </label>
+
+                                <textarea
+                                    class="form-control"
+                                    rows="3"
+                                    name="keterangan[${item.id}]"
+                                    placeholder="Masukkan ${item.nama_persyaratan.toLowerCase()}..."
+                                    ${item.is_required ? "required" : ""}
+                                ></textarea>
+
+                            </div>
+                        `;
+                    }
                 });
             }
 

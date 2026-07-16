@@ -112,7 +112,7 @@
                                     <textarea id="penduduk_alamat" class="form-control form-control-modern bg-white text-dark border-0 p-0 shadow-none"
                                         rows="2" readonly style="resize: none; min-height: auto; line-height: 1.4;"></textarea>
                                 </div>
-                                
+
                             </div>
                         </div>
 
@@ -149,44 +149,21 @@
 
                         </div>
 
-                        <div id="formUsaha" style="display:none;">
-
-                            <div class="mb-3">
-
-                                <label class="form-label">
-                                    Nama Usaha
-                                </label>
-
-                                <input type="text" class="form-control" name="nama_usaha" id="nama_usaha">
-
-                            </div>
-
-                            <div class="mb-3">
-
-                                <label class="form-label">
-                                    Jenis Usaha
-                                </label>
-
-                                <input type="text" class="form-control" name="jenis_usaha" id="jenis_usaha">
-
-                            </div>
-
-                        </div>
-
                         <!-- Unggah Lampiran Persyaratan -->
                         <div class="mb-4">
 
                             <label class="form-label fw-medium text-dark small mb-2">
-                                Dokumen Persyaratan
+                                Persyaratan Pengajuan
                             </label>
 
                             <div id="wrapper-persyaratan" class="border rounded-3 p-3 bg-light">
 
                                 <div class="text-center text-muted small">
 
-                                    <i class="bi bi-folder2-open fs-3 d-block mb-2"></i>
+                                    <i class="bi bi-ui-checks-grid fs-3 d-block mb-2"></i>
 
                                     Silakan pilih jenis surat terlebih dahulu.
+                                    Persyaratan akan ditampilkan sesuai layanan yang dipilih.
 
                                 </div>
 

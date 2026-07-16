@@ -58,9 +58,15 @@ class PengajuanSuratController extends Controller
         foreach ($jenis->persyaratan as $item) {
             $rule = $item->is_required ? 'required' : 'nullable';
 
-            $request->validate([
-                'lampiran.' . $item->id => $rule . '|file|mimes:pdf,jpg,jpeg,png|max:2048',
-            ]);
+            if ($item->tipe_input == 'file') {
+                $request->validate([
+                    'lampiran.' . $item->id => $rule . '|file|mimes:pdf,jpg,jpeg,png|max:2048',
+                ]);
+            } else {
+                $request->validate([
+                    'keterangan.' . $item->id => $rule . '|string|max:1000',
+                ]);
+            }
         }
 
         // Generate kode pengajuan
@@ -83,19 +89,38 @@ class PengajuanSuratController extends Controller
                 'status' => 'menunggu',
             ]);
 
-            if ($request->hasFile('lampiran')) {
-                foreach ($request->file('lampiran') as $persyaratanId => $file) {
-                    if (!$file) {
-                        continue;
+            foreach ($jenis->persyaratan as $item) {
+                //==============================
+                // FILE
+                //==============================
+                if ($item->tipe_input == 'file') {
+                    if ($request->hasFile("lampiran.$item->id")) {
+                        $file = $request->file("lampiran.$item->id");
+
+                        $path = $file->store('lampiran', 'public');
+
+                        LampiranPengajuanModel::create([
+                            'pengajuan_surat_id' => $pengajuan->id,
+                            'persyaratan_surat_id' => $item->id,
+                            'nama_file' => $file->getClientOriginalName(),
+                            'file_path' => $path,
+                            'keterangan' => null,
+                            'status' => 'menunggu',
+                        ]);
                     }
+                }
 
-                    $path = $file->store('lampiran', 'public');
-
+                //==============================
+                // KETERANGAN
+                //==============================
+                else {
                     LampiranPengajuanModel::create([
                         'pengajuan_surat_id' => $pengajuan->id,
-                        'persyaratan_surat_id' => $persyaratanId,
-                        'nama_file' => $file->getClientOriginalName(),
-                        'file_path' => $path,
+                        'persyaratan_surat_id' => $item->id,
+                        'nama_file' => null,
+                        'file_path' => null,
+                        'keterangan' => $request->keterangan[$item->id] ?? null,
+                        'status' => 'menunggu',
                     ]);
                 }
             }
@@ -174,6 +199,7 @@ class PengajuanSuratController extends Controller
                     'id' => $item->id,
                     'nama_persyaratan' => $item->nama_persyaratan,
                     'is_required' => $item->is_required,
+                    'tipe_input' => $item->tipe_input,
                 ];
             }),
         ]);

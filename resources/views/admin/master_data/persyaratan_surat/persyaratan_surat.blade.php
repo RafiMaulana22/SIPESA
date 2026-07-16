@@ -2,15 +2,25 @@
 
 @section('content')
     <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center mb-4 gap-3">
-        <div>
-            <h3 class="fw-bold  mb-1" style="letter-spacing: -0.02em;">
-                Persyaratan Surat
-            </h3>
-            <p class="text-muted small mb-0">
-                Konfigurasi lampiran berkas wajib dan opsional untuk jenis surat: <strong
-                    class="">{{ $jenisSurat->nama_surat }}</strong>
-            </p>
+
+        <div class="d-flex align-items-center gap-3">
+            <a href="{{ route('jenis-surat.index') }}" class="btn btn-light border rounded-3">
+                <i class="bi bi-arrow-left"></i>
+                Kembali
+            </a>
+
+            <div>
+                <h3 class="fw-bold mb-1">
+                    Persyaratan Surat
+                </h3>
+
+                <p class="text-muted small mb-0">
+                    Konfigurasi lampiran berkas wajib dan opsional untuk jenis surat
+                    <strong>{{ $jenisSurat->nama_surat }}</strong>
+                </p>
+            </div>
         </div>
+
     </div>
 
     <div class="row g-4 mb-4">
@@ -62,6 +72,25 @@
         </div>
     </div>
 
+    <div class="alert alert-primary border-0 shadow-sm rounded-3 mb-4">
+        <h6 class="fw-bold mb-2">
+            Placeholder Template Word
+        </h6>
+
+        <p class="mb-2">
+            Setiap persyaratan bertipe <strong>Keterangan</strong> memiliki placeholder yang dibuat otomatis.
+        </p>
+
+        <p class="mb-0">
+            Contoh penulisan pada template Word:
+        </p>
+
+        <code>${nama_usaha}</code><br>
+        <code>${jenis_usaha}</code><br>
+        <code>${nomor_induk_berusaha}</code><br>
+        <code>${luas_tanah}</code>
+    </div>
+
     <div class="card bg-white border-0 shadow-sm rounded-4 overflow-hidden">
         <div
             class="card-header bg-white p-4 border-0 d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
@@ -83,6 +112,8 @@
                     <tr>
                         <th class="ps-3" width="8%">No</th>
                         <th>Nama Persyaratan Dokumen</th>
+                        <th>Jenis Input</th>
+                        <th>Placeholder Word</th>
                         <th width="20%">Status Sifat</th>
                         <th width="20%">Tanggal Dibuat</th>
                         <th class="pe-3 text-end" width="20%">Aksi Manajemen</th>
@@ -93,6 +124,22 @@
                         <tr>
                             <td class="ps-3 text-muted fw-medium">{{ $loop->iteration }}</td>
                             <td class="fw-semibold ">{{ $item->nama_persyaratan }}</td>
+                            <td class="text-muted small">
+                                @if ($item->tipe_input == 'file')
+                                    <span class="badge bg-primary">
+                                        Upload Berkas
+                                    </span>
+                                @else
+                                    <span class="badge bg-info">
+                                        Isian Keterangan
+                                    </span>
+                                @endif
+                            </td>
+                            <td>
+                                <span class="badge bg-dark">
+                                    ${{ $item->placeholder }}
+                                </span>
+                            </td>
                             <td>
                                 @if ($item->is_required)
                                     <span
@@ -146,6 +193,7 @@
     </div>
 
     @foreach ($jenisSurat->persyaratan as $item)
+        {{--  Modal Detail Persyaratan  --}}
         <div class="modal fade" id="ModalDetail{{ $item->id }}" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden bg-white">
@@ -168,6 +216,19 @@
                                     value="{{ $item->nama_persyaratan }}" readonly>
                             </div>
                             <div class="col-md-12">
+                                <label class="form-label fw-medium  small mb-1">Jenis Input</label>
+                                <input type="text" class="form-control bg-light border-0 py-2.5  fw-semibold rounded-3"
+                                    value="{{ $item->tipe_input }}" readonly>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label fw-medium small mb-1">
+                                    Placeholder Template Word
+                                </label>
+
+                                <input type="text" class="form-control bg-light border-0 py-2.5 fw-semibold rounded-3"
+                                    value="${{ $item->placeholder }}" readonly>
+                            </div>
+                            <div class="col-md-12">
                                 <label class="form-label fw-medium  small mb-1">Sifat Sifat Dokumen</label>
                                 <div>
                                     <span
@@ -187,6 +248,7 @@
             </div>
         </div>
 
+        {{--  Modal Edit Persyaratan  --}}
         <div class="modal fade" id="ModalEdit{{ $item->id }}" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden bg-white">
@@ -211,6 +273,28 @@
                                     <input type="text" name="nama_persyaratan"
                                         class="form-control search-box-modern py-2.5 bg-white border"
                                         value="{{ $item->nama_persyaratan }}" required>
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="form-label fw-medium  small mb-2">Jenis Input</label>
+                                    <select class="form-control default-select" name="tipe_input" required>
+                                        <option value="file" {{ $item->tipe_input == 'file' ? 'selected' : '' }}>File
+                                        </option>
+                                        <option value="keterangan"
+                                            {{ $item->tipe_input == 'keterangan' ? 'selected' : '' }}>
+                                            Keterangan</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="form-label fw-medium small mb-2">
+                                        Placeholder Word
+                                    </label>
+
+                                    <input type="text" class="form-control bg-light"
+                                        value="${{ $item->placeholder }}" readonly>
+
+                                    <small class="text-muted">
+                                        Placeholder dibuat otomatis oleh sistem dan digunakan pada template Word.
+                                    </small>
                                 </div>
                                 <div class="col-md-12">
                                     <label class="form-label fw-medium  small mb-2">Sifat Sifat
@@ -238,6 +322,7 @@
             </div>
         </div>
 
+        {{--  Modal Hapus Persyaratan  --}}
         <div class="modal fade" id="ModalDelete{{ $item->id }}" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden bg-white">
@@ -272,6 +357,7 @@
         </div>
     @endforeach
 
+    {{--  Modal Tambah Persyaratan  --}}
     <div class="modal fade" id="ModalTambah" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden bg-white">
@@ -292,12 +378,25 @@
                     </div>
                     <div class="modal-body p-4">
                         <div class="row g-3">
+                            <div class="alert alert-info small mb-0">
+                                <i class="bi bi-info-circle"></i>
+
+                                Placeholder Word akan dibuat otomatis oleh sistem berdasarkan nama persyaratan.
+                            </div>
                             <div class="col-md-12">
                                 <label class="form-label fw-medium  small mb-2">Nama Persyaratan
                                     Dokumen</label>
                                 <input type="text" name="nama_persyaratan"
                                     class="form-control search-box-modern py-2.5 bg-white border"
                                     placeholder="Contoh: Kartu Keluarga asli / Pengantar RT" required>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label fw-medium  small mb-2">Jenis Input</label>
+                                <select class="form-control default-select" name="tipe_input" required>
+                                    <option value="" selected disabled>Pilih Jenis Input</option>
+                                    <option value="file">File</option>
+                                    <option value="keterangan">Keterangan</option>
+                                </select>
                             </div>
                             <div class="col-md-12">
                                 <label class="form-label fw-medium  small mb-2">Sifat Urgensi Berkas</label>

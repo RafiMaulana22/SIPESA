@@ -191,7 +191,7 @@
                                         </td>
                                         <td class="pe-4 text-end">
                                             <div class="d-inline-flex gap-1.5">
-                                                <a target="_blank" href="{{ Storage::url($arsip->file_pdf) }}"
+                                                <a target="_blank" href="{{ asset($arsip->file_pdf) }}"
                                                     class="btn btn-sm btn-light border text-secondary px-2.5 py-1.5 rounded-2 shadow-none"
                                                     title="Lihat Dokumen">
                                                     <i class="bi bi-eye"></i>

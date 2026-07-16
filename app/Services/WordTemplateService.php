@@ -10,7 +10,7 @@ class WordTemplateService
 {
     public function generate(PengajuanSuratModel $pengajuan)
     {
-        $pengajuan->load(['penduduk', 'jenisSurat']);
+        $pengajuan->load(['penduduk', 'jenisSurat', 'lampiran.persyaratan']);
 
         $template = TemplateSuratModel::where('jenis_surat_id', $pengajuan->jenis_surat_id)->firstOrFail();
 
@@ -30,10 +30,35 @@ class WordTemplateService
         $processor->setValue('agama', $pengajuan->penduduk->agama ?? '');
         $processor->setValue('pekerjaan', $pengajuan->penduduk->pekerjaan ?? '');
 
-        $processor->setValue('nama_usaha', $pengajuan->nama_usaha ?? '');
-        $processor->setValue('jenis_usaha', $pengajuan->jenis_usaha ?? '');
-
         $processor->setValue('keperluan', $pengajuan->keperluan ?? '');
+
+        foreach ($pengajuan->lampiran as $lampiran) {
+            if (!$lampiran->persyaratan) {
+                continue;
+            }
+
+            $placeholder = $lampiran->persyaratan->placeholder;
+
+            if ($lampiran->persyaratan->tipe_input == 'keterangan') {
+                $processor->setValue($placeholder, $lampiran->keterangan ?? '');
+            } else {
+                /*
+                 * Untuk tipe file sementara dikosongkan.
+                 * Nanti jika ingin menampilkan nama file atau gambar
+                 * bisa ditambahkan di sini.
+                 */
+
+                $processor->setValue($placeholder, $lampiran->nama_file ?? '');
+            }
+        }
+
+        foreach ($pengajuan->jenisSurat->persyaratan as $persyaratan) {
+            $sudahAda = $pengajuan->lampiran->firstWhere('persyaratan_surat_id', $persyaratan->id);
+
+            if (!$sudahAda) {
+                $processor->setValue($persyaratan->placeholder, '');
+            }
+        }
 
         $namaFile = 'Surat-' . $pengajuan->kode_pengajuan . '.docx';
 

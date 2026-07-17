@@ -33,6 +33,15 @@
             </li>
         </ul>
     </li>
+    @if (Auth::user()->role == 'kepala_desa')
+        <li>
+            <a class="ai-icon" href="{{ route('manajemen-user.index') }}" aria-expanded="false">
+                <i class="flaticon-381-networking"></i>
+                <span class="nav-text">Manajemen User</span>
+            </a>
+        </li>
+    @endif
+
     {{--  <li><a class="has-arrow ai-icon" href="javascript:void()" aria-expanded="false">
             <i class="flaticon-381-internet"></i>
             <span class="nav-text">Informasi</span>

@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\JenisSuratController;
 use App\Http\Controllers\Admin\JenisSuratController as AdminJenisSuratController;
 use App\Http\Controllers\Admin\KategoriSuratController;
+use App\Http\Controllers\Admin\ManajemenUserController;
 use App\Http\Controllers\Admin\PendudukController;
 use App\Http\Controllers\Admin\PengajuanSuratController;
 use App\Http\Controllers\Admin\PersyaratanSuratController;
@@ -89,6 +90,12 @@ Route::middleware(['auth'])->group(function () {
 
     // Arsip Digital
     Route::get('/arsip-digital', [ArsipSuratController::class, 'index'])->name('arsip-digital.index');
+
+    // Manajemen User
+    Route::get('/manajemen-user', [ManajemenUserController::class, 'index'])->name('manajemen-user.index');
+    Route::post('/manajemen-user', [ManajemenUserController::class, 'store'])->name('manajemen-user.store');
+    Route::put('/manajemen-user/{id}', [ManajemenUserController::class, 'update'])->name('manajemen-user.update');
+    Route::delete('/manajemen-user/{id}', [ManajemenUserController::class, 'destroy'])->name('manajemen-user.destroy');
 
     // Auth Logout
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');

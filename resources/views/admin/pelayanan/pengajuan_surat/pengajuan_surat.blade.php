@@ -221,8 +221,8 @@
                     <h4 class="card-title">Daftar Antrean Surat Masuk</h4>
                 </div>
                 <div class="card-body">
-                    <div class="table-responsive">
-                        <table id="example" class="display min-w850">
+                    <div class="table-responsive px-2">
+                        <table id="example" class="table table-hover align-middle mb-0 custom-admin-table w-100">
                             <thead>
                                 <tr>
                                     <th class="ps-4">No</th>
@@ -236,7 +236,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($pengajuans as $pengajuan)
+                                @foreach ($pengajuans as $pengajuan)
                                     <tr>
                                         <td class="ps-4 text-muted fw-medium">{{ $loop->iteration }}</td>
                                         <td>
@@ -246,7 +246,16 @@
                                             </span>
                                         </td>
                                         <td class="fw-semibold ">{{ $pengajuan->kode_pengajuan }}</td>
-                                        <td class="text-muted small">{{ $pengajuan->tanggal_pengajuan->format('d M Y') }}
+                                        <td>
+                                            <div class="d-flex flex-column">
+                                                <span class="fw-medium">
+                                                    {{ $pengajuan->tanggal_pengajuan->translatedFormat('d F Y') }}
+                                                </span>
+                                                <small class="text-muted">
+                                                    <i class="bi bi-clock"></i>
+                                                    {{ $pengajuan->tanggal_pengajuan->format('H:i') }} WIB
+                                                </small>
+                                            </div>
                                         </td>
                                         <td>
                                             <div class="d-flex flex-column">
@@ -296,7 +305,7 @@
                                                     {{-- Admin --}}
                                                 @else
                                                     @if ($pengajuan->status == 'menunggu')
-                                                        @if ($pengajuan->nomor_antrian == $pengajuans->where('status', 'menunggu')->min('nomor_antrian'))
+                                                        @if (!$sedangDiproses && $pengajuan->nomor_antrian == $nomorFifo)
                                                             <form
                                                                 action="{{ route('pengajuan-surat.mulai-proses', $pengajuan->id) }}"
                                                                 method="POST" class="d-inline">
@@ -311,10 +320,17 @@
 
                                                             </form>
                                                         @else
-                                                            <button class="btn btn-secondary btn-sm" disabled>
-                                                                <i class="bi bi-lock"></i>
-                                                                Menunggu FIFO
-                                                            </button>
+                                                            @if ($sedangDiproses)
+                                                                <button class="btn btn-secondary btn-sm" disabled>
+                                                                    <i class="bi bi-hourglass-split"></i>
+                                                                    Ada Surat Diproses
+                                                                </button>
+                                                            @else
+                                                                <button class="btn btn-secondary btn-sm" disabled>
+                                                                    <i class="bi bi-lock"></i>
+                                                                    Menunggu FIFO
+                                                                </button>
+                                                            @endif
                                                         @endif
                                                     @elseif($pengajuan->status == 'diproses')
                                                         <a href="{{ route('pengajuan-surat.proses', $pengajuan->id) }}"
@@ -346,18 +362,7 @@
                                             </div>
                                         </td>
                                     </tr>
-                                @empty
-
-                                    <tr>
-
-                                        <td colspan="8" class="text-center">
-
-                                            Belum ada data pengajuan.
-
-                                        </td>
-
-                                    </tr>
-                                @endforelse
+                                @endforeach
                             </tbody>
                         </table>
                     </div>

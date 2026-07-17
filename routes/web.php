@@ -38,9 +38,12 @@ Route::middleware(['guest'])->group(function () {
     Route::post('/validasi-nik', [LandingPengajuanSuratController::class, 'validasiNik'])->name('landing.validasi-nik');
     Route::post('/form-pengajuan', [LandingPengajuanSuratController::class, 'formPengajuan'])->name('landing.form-pengajuan');
     Route::get('/form-pengajuan/{id}', [LandingPengajuanSuratController::class, 'getPersyaratan'])->name('landing.get-persyaratan');
-    Route::post('/cek-status', [LandingPengajuanSuratController::class, 'cekStatus'])->name('landing.cek-status');
     Route::get('/pengajuan-surat/form/{nik}', [LandingPengajuanSuratController::class, 'form'])->name('landing.form');
     Route::get('/kategori/{kategori}/jenis-surat', [LandingPengajuanSuratController::class, 'getJenisSurat'])->name('landing.kategori.jenis');
+    Route::post('/cek-status', [LandingPengajuanSuratController::class, 'validasiNikStatus'])->name('landing.cek-status');
+    Route::get('/riwayat-pengajuan/{nik}', [LandingPengajuanSuratController::class, 'riwayat'])->name('landing.riwayat');
+    Route::get('/detail-pengajuan/{kode}', [LandingPengajuanSuratController::class, 'detailPengajuan'])->name('landing.detail-pengajuan');
+    Route::get('/download/{id}', [LandingPengajuanSuratController::class, 'download'])->name('landing.download');
 
     // Auth Login
     Route::get('/login', [LoginController::class, 'index'])->name('login');

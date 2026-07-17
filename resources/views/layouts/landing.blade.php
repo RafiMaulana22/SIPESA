@@ -52,7 +52,7 @@
     </script>
 
     <script>
-        window.cekStatusUrl = "{{ route('landing.cek-status') }}";
+        window.validasiNikStatusUrl = "{{ route('landing.cek-status') }}";
     </script>
 
     <script src="{{ asset('assets/js/landing.js') }}"></script>

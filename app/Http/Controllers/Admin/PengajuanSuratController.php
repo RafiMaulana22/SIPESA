@@ -22,7 +22,7 @@ class PengajuanSuratController extends Controller
 
     public function index(Request $request)
     {
-        $query = PengajuanSuratModel::with(['penduduk', 'jenisSurat']);
+        $query = PengajuanSuratModel::with(['penduduk', 'jenisSurat'])->whereIn('status', ['menunggu', 'diproses']); // hanya antrean aktif
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
@@ -36,11 +36,24 @@ class PengajuanSuratController extends Controller
             $query->whereDate('tanggal_pengajuan', $request->tanggal);
         }
 
-        $pengajuans = $query->orderBy('nomor_antrian')->paginate();
+        $pengajuans = $query->orderBy('nomor_antrian')->paginate(10);
+
+        // Cek apakah masih ada surat yang sedang diproses
+        $sedangDiproses = PengajuanSuratModel::where('status', 'diproses')->exists();
+
+        // Nomor FIFO hanya muncul jika TIDAK ADA yang sedang diproses
+        $nomorFifo = null;
+
+        if (!$sedangDiproses) {
+            $nomorFifo = PengajuanSuratModel::where('status', 'menunggu')->min('nomor_antrian');
+        }
 
         return view('admin.pelayanan.pengajuan_surat.pengajuan_surat', [
             'pengajuans' => $pengajuans,
             'jenisSurats' => JenisSuratModel::orderBy('nama_surat')->get(),
+
+            'nomorFifo' => $nomorFifo,
+            'sedangDiproses' => $sedangDiproses,
 
             'totalPengajuan' => PengajuanSuratModel::count(),
             'menunggu' => PengajuanSuratModel::where('status', 'menunggu')->count(),
@@ -73,6 +86,13 @@ class PengajuanSuratController extends Controller
             return redirect()->route('pengajuan-surat.proses', $pengajuan->id)->with('info', 'Pengajuan sudah diproses.');
         }
 
+        // Tidak boleh ada lebih dari satu surat yang diproses
+        $adaDiproses = PengajuanSuratModel::where('status', 'diproses')->exists();
+
+        if ($adaDiproses) {
+            return back()->with('error', 'Masih ada pengajuan yang sedang diproses. Selesaikan atau tolak terlebih dahulu.');
+        }
+
         // Cek FIFO
         $antrianPertama = PengajuanSuratModel::where('status', 'menunggu')->orderBy('nomor_antrian')->first();
 
@@ -88,32 +108,30 @@ class PengajuanSuratController extends Controller
         return redirect()->route('pengajuan-surat.proses', $pengajuan->id)->with('success', 'Pengajuan berhasil masuk ke proses.');
     }
 
-    public function setujui(Request $request, $id, WordTemplateService $wordService)
+    public function setujui(Request $request, $id)
     {
-        DB::transaction(function () use ($request, $id, $wordService) {
+        DB::transaction(function () use ($request, $id) {
             $pengajuan = PengajuanSuratModel::with(['penduduk', 'jenisSurat', 'lampiran.persyaratan'])->findOrFail($id);
 
-            // Generate surat
-            $namaFile = $wordService->generate($pengajuan);
+            // generate PDF
+            $namaFile = $this->wordService->generate($pengajuan);
 
-            // Update pengajuan
             $pengajuan->update([
                 'status' => 'selesai',
                 'catatan_admin' => $request->catatan_admin,
                 'file_surat' => $namaFile,
             ]);
 
-            // Simpan ke arsip digital
             ArsipSuratModel::create([
                 'pengajuan_surat_id' => $pengajuan->id,
                 'nomor_surat' => $pengajuan->kode_pengajuan,
                 'tanggal_surat' => now(),
                 'file_pdf' => 'hasil_surat/' . $namaFile,
-                'created_by' => auth()->id() ?? 1,
+                'created_by' => auth()->id(),
             ]);
         });
 
-        return redirect()->route('pengajuan-surat.index')->with('success', 'Surat berhasil dibuat.');
+        return redirect()->route('pengajuan-surat.index')->with('success', 'Surat berhasil dibuat dalam format PDF.');
     }
 
     public function tolak(Request $request, $id)
@@ -177,15 +195,6 @@ class PengajuanSuratController extends Controller
         return view('admin.pelayanan.pengajuan_surat.detail', compact('pengajuan'));
     }
 
-    public function cetak($id)
-    {
-        $pengajuan = PengajuanSuratModel::with(['penduduk', 'jenisSurat'])->findOrFail($id);
-
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.pelayanan.pengajuan_surat.pdf', compact('pengajuan'));
-
-        return $pdf->stream('Surat-' . $pengajuan->kode_pengajuan . '.pdf');
-    }
-
     public function download($id)
     {
         $pengajuan = PengajuanSuratModel::findOrFail($id);
@@ -213,10 +222,8 @@ class PengajuanSuratController extends Controller
 
         $file = public_path('hasil_surat/' . $pengajuan->file_surat);
 
-        // dd(file_exists(public_path('hasil_surat/' . $pengajuan->file_surat)));
-
         if (!file_exists($file)) {
-            dd($file); // sementara untuk debug
+            abort(404, 'File PDF tidak ditemukan.');
         }
 
         return response()->file($file);

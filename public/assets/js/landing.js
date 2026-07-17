@@ -64,111 +64,6 @@ function validasiNik() {
         });
 }
 
-const formStatus = document.getElementById("formCekStatus");
-
-formStatus.addEventListener("submit", function (e) {
-    e.preventDefault();
-
-    let keyword = this.keyword.value;
-
-    fetch(window.cekStatusUrl, {
-        method: "POST",
-
-        headers: {
-            "X-CSRF-TOKEN": window.csrfToken,
-            Accept: "application/json",
-            "Content-Type": "application/x-www-form-urlencoded",
-        },
-
-        body: new URLSearchParams({
-            keyword: keyword,
-        }),
-    })
-        .then((response) => response.json())
-        .then((res) => {
-            if (!res.status) {
-                Swal.fire({
-                    icon: "error",
-                    title: "Data tidak ditemukan",
-                });
-
-                return;
-            }
-
-            document.getElementById("wrapper-input-pencarian").style.display =
-                "none";
-            document.getElementById("hasilStatus").style.display = "block";
-
-            let badge = "";
-
-            switch (res.pengajuan.status) {
-                case "menunggu":
-                    badge = '<span class="badge bg-secondary">Menunggu</span>';
-                    break;
-
-                case "diproses":
-                    badge =
-                        '<span class="badge bg-warning text-dark">Diproses</span>';
-                    break;
-
-                case "selesai":
-                    badge = '<span class="badge bg-success">Selesai</span>';
-                    break;
-
-                case "ditolak":
-                    badge = '<span class="badge bg-danger">Ditolak</span>';
-                    break;
-            }
-
-            document.getElementById("status_badge_container").innerHTML = badge;
-
-            document.getElementById("status_kode").innerHTML =
-                res.pengajuan.kode;
-
-            document.getElementById("status_nama").innerHTML =
-                res.pengajuan.nama;
-
-            document.getElementById("status_nik").innerHTML = res.pengajuan.nik;
-
-            document.getElementById("status_surat").innerHTML =
-                res.pengajuan.jenis_surat;
-
-            document.getElementById("status_tanggal").innerHTML =
-                res.pengajuan.tanggal;
-
-            document.getElementById("status_catatan").innerHTML =
-                res.pengajuan.catatan ?? "-";
-        })
-        .catch((err) => {
-            console.log(err);
-
-            Swal.fire({
-                icon: "error",
-                title: "Oops",
-                text: "Terjadi kesalahan server.",
-            });
-        });
-});
-
-document
-    .getElementById("btnKembaliStatus")
-    .addEventListener("click", function () {
-        document.getElementById("wrapper-input-pencarian").style.display =
-            "block";
-
-        document.getElementById("hasilStatus").style.display = "none";
-
-        document.getElementById("formCekStatus").reset();
-
-        document.getElementById("status_badge_container").innerHTML = "";
-        document.getElementById("status_kode").innerHTML = "";
-        document.getElementById("status_nama").innerHTML = "";
-        document.getElementById("status_nik").innerHTML = "";
-        document.getElementById("status_surat").innerHTML = "";
-        document.getElementById("status_tanggal").innerHTML = "";
-        document.getElementById("status_catatan").innerHTML = "-";
-    });
-
 const kategori = document.getElementById("kategori_surat");
 const jenis = document.getElementById("jenis_surat");
 
@@ -289,59 +184,114 @@ if (jenis) {
 
 const formPengajuan = document.getElementById("formPengajuan");
 
-formPengajuan.addEventListener("submit", function (e) {
-    e.preventDefault();
+if (formPengajuan) {
+    formPengajuan.addEventListener("submit", function (e) {
+        e.preventDefault();
 
-    const btn = document.getElementById("btnSubmitPengajuan");
+        const btn = document.getElementById("btnSubmitPengajuan");
 
-    btn.disabled = true;
-    btn.innerHTML =
-        '<span class="spinner-border spinner-border-sm me-2"></span>Mengirim...';
+        btn.disabled = true;
+        btn.innerHTML =
+            '<span class="spinner-border spinner-border-sm me-2"></span>Mengirim...';
 
-    let formData = new FormData(this);
+        let formData = new FormData(this);
 
-    fetch(this.action, {
-        method: "POST",
-        headers: {
-            "X-CSRF-TOKEN": window.csrfToken,
-            Accept: "application/json",
-        },
-        body: formData,
-    })
-        .then((res) => res.json())
-        .then((res) => {
-            btn.disabled = false;
-            btn.innerHTML = "Kirim Pengajuan";
+        fetch(this.action, {
+            method: "POST",
+            headers: {
+                "X-CSRF-TOKEN": window.csrfToken,
+                Accept: "application/json",
+            },
+            body: formData,
+        })
+            .then((res) => res.json())
+            .then((res) => {
+                btn.disabled = false;
+                btn.innerHTML = "Kirim Pengajuan";
 
-            if (res.status) {
-                Swal.fire({
-                    icon: "success",
-                    title: "Pengajuan Berhasil",
-                    html:
-                        "Kode Pengajuan Anda<br><br><b>" +
-                        res.kode_pengajuan +
-                        "</b><br><br>Simpan kode ini untuk mengecek status.",
-                }).then(() => {
-                    window.location.href = "/";
-                });
-            } else {
+                if (res.status) {
+                    Swal.fire({
+                        icon: "success",
+                        title: "Pengajuan Berhasil",
+                        html:
+                            "Kode Pengajuan Anda<br><br><b>" +
+                            res.kode_pengajuan +
+                            "</b><br><br>Simpan kode ini untuk mengecek status.",
+                    }).then(() => {
+                        window.location.href = "/";
+                    });
+                } else {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Gagal",
+                        text: res.message,
+                    });
+                }
+            })
+            .catch((err) => {
+                btn.disabled = false;
+                btn.innerHTML = "Kirim Pengajuan";
+
+                console.log(err);
+
                 Swal.fire({
                     icon: "error",
-                    title: "Gagal",
-                    text: res.message,
+                    title: "Server Error",
+                    text: "Terjadi kesalahan.",
                 });
-            }
-        })
-        .catch((err) => {
-            btn.disabled = false;
-            btn.innerHTML = "Kirim Pengajuan";
-
-            console.log(err);
-
-            Swal.fire({
-                icon: "error",
-                title: "Server Error",
-                text: "Terjadi kesalahan.",
             });
-        });
-});
+    });
+}
+
+const formStatus = document.getElementById("formCekStatus");
+
+if (formStatus) {
+    formStatus.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const nik = this.nik.value;
+
+        fetch(window.validasiNikStatusUrl, {
+            method: "POST",
+            headers: {
+                "X-CSRF-TOKEN": window.csrfToken,
+                Accept: "application/json",
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: new URLSearchParams({
+                nik: nik,
+            }),
+        })
+            .then((response) => response.json())
+            .then((res) => {
+                if (!res.status) {
+                    Swal.fire({
+                        icon: "error",
+                        title: "NIK Tidak Ditemukan",
+                        text: "NIK yang Anda masukkan tidak terdaftar.",
+                    });
+
+                    return;
+                }
+
+                Swal.fire({
+                    icon: "success",
+                    title: "Data Ditemukan",
+                    text: "Anda akan diarahkan ke halaman riwayat pengajuan surat.",
+                    confirmButtonText: "Lanjut",
+                    allowOutsideClick: false,
+                }).then(() => {
+                    window.location.href = res.redirect;
+                });
+            })
+            .catch((err) => {
+                console.log(err);
+
+                Swal.fire({
+                    icon: "error",
+                    title: "Server Error",
+                    text: "Terjadi kesalahan pada server.",
+                });
+            });
+    });
+}

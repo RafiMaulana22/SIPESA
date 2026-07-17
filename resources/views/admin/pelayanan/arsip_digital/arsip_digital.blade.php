@@ -156,7 +156,7 @@
                             <thead>
                                 <tr>
                                     <th class="ps-4">No</th>
-                                    <th>No Surat</th>
+                                    <th>Jenis Surat</th>
                                     <th>Tanggal Selesai</th>
                                     <th>Identitas Warga</th>
                                     <th>Kategori Surat</th>
@@ -168,8 +168,15 @@
                                 @forelse($arsips as $arsip)
                                     <tr>
                                         <td class="ps-4 text-muted fw-medium">{{ $loop->iteration }}</td>
-                                        <td class="fw-semibold">
-                                            {{ $arsip->nomor_surat }}
+                                        <td>
+                                            <div class="d-flex flex-column">
+                                                <span class="fw-semibold">
+                                                    {{ $arsip->pengajuan->jenisSurat->nama_surat }}
+                                                </span>
+                                                <small class="text-muted">
+                                                    {{ $arsip->nomor_surat }}
+                                                </small>
+                                            </div>
                                         </td>
                                         <td class="text-muted small">
                                             {{ $arsip->tanggal_surat->translatedFormat('d F Y') }}</td>
@@ -181,7 +188,8 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <span class=fw-medium">{{ $arsip->pengajuan->jenisSurat->kategoriSurat->nama_kategori }}</span>
+                                            <span
+                                                class=fw-medium">{{ $arsip->pengajuan->jenisSurat->kategoriSurat->nama_kategori }}</span>
                                         </td>
                                         <td>
                                             <span
@@ -196,7 +204,7 @@
                                                     title="Lihat Dokumen">
                                                     <i class="bi bi-eye"></i>
                                                 </a>
-                                                <a href="{{ Storage::url($arsip->file_pdf) }}" download
+                                                <a href="{{ asset($arsip->file_pdf) }}" download
                                                     class="btn btn-sm btn-light border text-primary px-2.5 py-1.5 rounded-2 shadow-none"
                                                     title="Unduh Berkas">
                                                     <i class="bi bi-download"></i>

@@ -11,6 +11,7 @@ use App\Models\Admin\PengajuanSuratModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class PengajuanSuratController extends Controller
 {
@@ -140,41 +141,6 @@ class PengajuanSuratController extends Controller
         }
     }
 
-    public function cekStatus(Request $request)
-    {
-        $request->validate([
-            'keyword' => 'required',
-        ]);
-
-        $pengajuan = PengajuanSuratModel::with(['penduduk', 'jenisSurat'])
-            ->where('kode_pengajuan', $request->keyword)
-            ->orWhereHas('penduduk', function ($q) use ($request) {
-                $q->where('nik', $request->keyword);
-            })
-            ->latest()
-            ->first();
-
-        if (!$pengajuan) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Data tidak ditemukan.',
-            ]);
-        }
-
-        return response()->json([
-            'status' => true,
-            'pengajuan' => [
-                'kode' => $pengajuan->kode_pengajuan,
-                'nama' => $pengajuan->penduduk->nama,
-                'nik' => $pengajuan->penduduk->nik,
-                'jenis_surat' => $pengajuan->jenisSurat->nama_surat,
-                'status' => $pengajuan->status,
-                'tanggal' => $pengajuan->tanggal_pengajuan->format('d M Y H:i'),
-                'catatan' => $pengajuan->catatan_admin,
-            ],
-        ]);
-    }
-
     public function getPersyaratan($id)
     {
         $jenisSurat = JenisSuratModel::with('persyaratan')->findOrFail($id);
@@ -218,5 +184,61 @@ class PengajuanSuratController extends Controller
             'status' => true,
             'jenis' => $jenis,
         ]);
+    }
+
+    public function validasiNikStatus(Request $request)
+    {
+        $request->validate([
+            'nik' => 'required|digits:16',
+        ]);
+
+        $penduduk = PendudukModel::where('nik', $request->nik)->first();
+
+        if (!$penduduk) {
+            return response()->json([
+                'status' => false,
+                'message' => 'NIK tidak ditemukan.',
+            ]);
+        }
+
+        return response()->json([
+            'status' => true,
+            'redirect' => route('landing.riwayat', $penduduk->nik),
+        ]);
+    }
+
+    public function riwayat($nik)
+    {
+        $penduduk = PendudukModel::where('nik', $nik)->firstOrFail();
+
+        $pengajuans = PengajuanSuratModel::with('jenisSurat')->where('penduduk_id', $penduduk->id)->latest()->get();
+
+        return view('landing.status.riwayat', compact('penduduk', 'pengajuans'));
+    }
+
+    public function detailPengajuan($kode)
+    {
+        $pengajuan = PengajuanSuratModel::with(['penduduk', 'jenisSurat', 'lampiran.persyaratan'])
+            ->where('kode_pengajuan', $kode)
+            ->firstOrFail();
+
+        return view('landing.status.detail', compact('pengajuan'));
+    }
+
+    public function download($id)
+    {
+        $pengajuan = PengajuanSuratModel::findOrFail($id);
+
+        if (!$pengajuan->file_surat) {
+            abort(404, 'File surat tidak tersedia.');
+        }
+
+        $path = public_path('hasil_surat/' . $pengajuan->file_surat);
+
+        if (!file_exists($path)) {
+            abort(404, 'File surat tidak ditemukan.');
+        }
+
+        return response()->download($path);
     }
 }

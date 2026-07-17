@@ -38,9 +38,12 @@ Route::middleware(['guest'])->group(function () {
     Route::post('/form-pengajuan', [LandingPengajuanSuratController::class, 'formPengajuan'])->name('landing.form-pengajuan');
     Route::get('/form-pengajuan/{id}', [LandingPengajuanSuratController::class, 'getPersyaratan'])->name('landing.get-persyaratan');
     Route::post('/cek-status', [LandingPengajuanSuratController::class, 'cekStatus'])->name('landing.cek-status');
+    Route::get('/pengajuan-surat/form/{nik}', [LandingPengajuanSuratController::class, 'form'])->name('landing.form');
+    Route::get('/kategori/{kategori}/jenis-surat', [LandingPengajuanSuratController::class, 'getJenisSurat'])->name('landing.kategori.jenis');
 
     // Auth Login
-    Route::get('/login', [LoginController::class, 'index'])->name('auth.login');
+    Route::get('/login', [LoginController::class, 'index'])->name('login');
+    Route::post('/login', [LoginController::class, 'login'])->name('login');
 
     // Auth Forgot Password
     Route::get('/forgot-password', [ForgotPasswordController::class, 'index'])->name('auth.forgot-password');
@@ -49,38 +52,44 @@ Route::middleware(['guest'])->group(function () {
     Route::get('/reset-password', [ResetPasswordController::class, 'index'])->name('auth.reset-password');
 });
 
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+Route::middleware(['auth'])->group(function () {
+    // Dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-//penduduk
-Route::resource('penduduk', PendudukController::class);
-Route::post('/penduduk/import', [PendudukController::class, 'import'])->name('penduduk.import');
+    //penduduk
+    Route::resource('penduduk', PendudukController::class);
+    Route::post('/penduduk/import', [PendudukController::class, 'import'])->name('penduduk.import');
 
-//KATEGORI SURAT
-Route::resource('kategori-surat', KategoriSuratController::class);
+    //KATEGORI SURAT
+    Route::resource('kategori-surat', KategoriSuratController::class);
 
-//jenis surat
-Route::resource('jenis-surat', JenisSuratController::class);
+    //jenis surat
+    Route::resource('jenis-surat', JenisSuratController::class);
 
-// Persyratan Surat
-Route::get('/persyaratan-surat/{id}', [PersyaratanSuratController::class, 'index'])->name('persyaratan-surat.index');
-Route::post('/persyaratan-surat/{id}', [PersyaratanSuratController::class, 'store'])->name('persyaratan-surat.store');
-Route::put('/persyaratan-surat/{id}', [PersyaratanSuratController::class, 'update'])->name('persyaratan-surat.update');
-Route::delete('/persyaratan-surat/{id}', [PersyaratanSuratController::class, 'destroy'])->name('persyaratan-surat.destroy');
+    // Persyratan Surat
+    Route::get('/persyaratan-surat/{id}', [PersyaratanSuratController::class, 'index'])->name('persyaratan-surat.index');
+    Route::post('/persyaratan-surat/{id}', [PersyaratanSuratController::class, 'store'])->name('persyaratan-surat.store');
+    Route::put('/persyaratan-surat/{id}', [PersyaratanSuratController::class, 'update'])->name('persyaratan-surat.update');
+    Route::delete('/persyaratan-surat/{id}', [PersyaratanSuratController::class, 'destroy'])->name('persyaratan-surat.destroy');
 
-//template surat
-Route::resource('template-surat', TemplateSuratController::class);
+    //template surat
+    Route::resource('template-surat', TemplateSuratController::class);
 
-// Pengajuan Surat
-Route::get('/pengajuan-surat', [PengajuanSuratController::class, 'index'])->name('pengajuan-surat.index');
-Route::get('/pengajuan-surat/proses/{id}', [PengajuanSuratController::class, 'proses'])->name('pengajuan-surat.proses');
-Route::put('/pengajuan-surat/mulai-proses/{id}', [PengajuanSuratController::class, 'mulaiProses'])->name('pengajuan-surat.mulai-proses');
-Route::post('/pengajuan-surat/proses/{id}/setujui', [PengajuanSuratController::class, 'setujui'])->name('pengajuan-surat.setujui');
-Route::post('/pengajuan-surat/proses/{id}/tolak', [PengajuanSuratController::class, 'tolak'])->name('pengajuan-surat.tolak');
-Route::put('/pengajuan-surat/proses/lampiran/{id}/valid', [PengajuanSuratController::class, 'validLampiran'])->name('pengajuan-surat.lampiran.valid');
-Route::put('/pengajuan-surat/proses/lampiran/{id}/tolak', [PengajuanSuratController::class, 'tolakLampiran'])->name('pengajuan-surat.lampiran.tolak');
-Route::get('/pengajuan-surat/detail/{id}', [PengajuanSuratController::class, 'detail'])->name('pengajuan-surat.detail');
-Route::get('/pengajuan-surat/{id}/preview', [PengajuanSuratController::class, 'preview'])->name('pengajuan-surat.preview');
-Route::get('/pengajuan-surat/{id}/download', [PengajuanSuratController::class, 'download'])->name('pengajuan-surat.download');
+    // Pengajuan Surat
+    Route::get('/pengajuan-surat', [PengajuanSuratController::class, 'index'])->name('pengajuan-surat.index');
+    Route::get('/pengajuan-surat/proses/{id}', [PengajuanSuratController::class, 'proses'])->name('pengajuan-surat.proses');
+    Route::put('/pengajuan-surat/mulai-proses/{id}', [PengajuanSuratController::class, 'mulaiProses'])->name('pengajuan-surat.mulai-proses');
+    Route::post('/pengajuan-surat/proses/{id}/setujui', [PengajuanSuratController::class, 'setujui'])->name('pengajuan-surat.setujui');
+    Route::post('/pengajuan-surat/proses/{id}/tolak', [PengajuanSuratController::class, 'tolak'])->name('pengajuan-surat.tolak');
+    Route::put('/pengajuan-surat/proses/lampiran/{id}/valid', [PengajuanSuratController::class, 'validLampiran'])->name('pengajuan-surat.lampiran.valid');
+    Route::put('/pengajuan-surat/proses/lampiran/{id}/tolak', [PengajuanSuratController::class, 'tolakLampiran'])->name('pengajuan-surat.lampiran.tolak');
+    Route::get('/pengajuan-surat/detail/{id}', [PengajuanSuratController::class, 'detail'])->name('pengajuan-surat.detail');
+    Route::get('/pengajuan-surat/{id}/preview', [PengajuanSuratController::class, 'preview'])->name('pengajuan-surat.preview');
+    Route::get('/pengajuan-surat/{id}/download', [PengajuanSuratController::class, 'download'])->name('pengajuan-surat.download');
 
-// Arsip Digital
-Route::get('/arsip-digital', [ArsipSuratController::class, 'index'])->name('arsip-digital.index');
+    // Arsip Digital
+    Route::get('/arsip-digital', [ArsipSuratController::class, 'index'])->name('arsip-digital.index');
+
+    // Auth Logout
+    Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+});

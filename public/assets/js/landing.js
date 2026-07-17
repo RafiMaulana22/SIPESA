@@ -1,17 +1,11 @@
 const formValidasi = document.getElementById("formValidasiNik");
-const formPengajuan = document.getElementById("formPengajuan");
 
-// FORM VALIDASI NIK
-formValidasi.addEventListener("submit", function (e) {
-    e.preventDefault();
-    validasiNik();
-});
-
-// FORM PENGAJUAN SURAT
-formPengajuan.addEventListener("submit", function (e) {
-    e.preventDefault();
-    kirimPengajuan();
-});
+if (formValidasi) {
+    formValidasi.addEventListener("submit", function (e) {
+        e.preventDefault();
+        validasiNik();
+    });
+}
 
 function validasiNik() {
     let nik = document.getElementById("nik").value;
@@ -49,40 +43,14 @@ function validasiNik() {
 
             document.getElementById("nikError").innerHTML = "";
 
-            console.log("VALIDASI BERHASIL");
-
-            // sembunyikan form validasi
-            document.getElementById("formValidasiNik").style.display = "none";
-
-            // tampilkan form pengajuan
-            document.getElementById("formPengajuan").style.display = "block";
-
-            // tampilkan isi step pengajuan
-            document.getElementById("step-pengajuan").style.display = "block";
-
-            document.getElementById("penduduk_id").value = res.penduduk.id;
-            document.getElementById("penduduk_nik").value = res.penduduk.nik;
-            document.getElementById("penduduk_nama").value = res.penduduk.nama;
-            document.getElementById("penduduk_alamat").value =
-                res.penduduk.alamat;
-
-            let select = document.getElementById("jenis_surat");
-
-            select.innerHTML =
-                '<option value="">-- Pilih Jenis Surat --</option>';
-
-            document.getElementById("wrapper-persyaratan").innerHTML = `
-                <div class="text-center text-muted py-3">
-                    Pilih jenis surat terlebih dahulu.
-                </div>
-            `;
-
-            res.jenisSurat.forEach(function (item) {
-                select.innerHTML += `
-                    <option value="${item.id}">
-                        ${item.nama_surat}
-                    </option>
-                `;
+            Swal.fire({
+                icon: "success",
+                title: "Validasi Berhasil",
+                text: "Data penduduk berhasil ditemukan. Anda akan diarahkan ke halaman pengajuan surat.",
+                confirmButtonText: "Lanjut",
+                allowOutsideClick: false,
+            }).then(() => {
+                window.location.href = res.redirect;
             });
         })
         .catch(async (err) => {
@@ -95,213 +63,6 @@ function validasiNik() {
             });
         });
 }
-
-function kirimPengajuan() {
-    const btnSubmit = document.getElementById("btnSubmitPengajuan");
-
-    btnSubmit.disabled = true;
-
-    btnSubmit.innerHTML =
-        '<span class="spinner-border spinner-border-sm me-2"></span>Mengirim...';
-
-    let form = document.getElementById("formPengajuan");
-
-    let formData = new FormData(form);
-
-    for (let pair of formData.entries()) {
-        console.log(pair[0], pair[1]);
-    }
-
-    fetch(window.formPengajuanUrl, {
-        method: "POST",
-        headers: {
-            "X-CSRF-TOKEN": window.csrfToken,
-            Accept: "application/json",
-        },
-        body: formData,
-    })
-        .then(async (response) => {
-            const data = await response.json();
-
-            console.log("Status :", response.status);
-            console.log("Response :", data);
-
-            return data;
-        })
-        .then((res) => {
-            btnSubmit.disabled = false;
-
-            btnSubmit.innerHTML =
-                '<i class="bi bi-check-circle me-1"></i>Kirim Pengajuan';
-
-            if (res.status) {
-                // Notifikasi
-                Swal.fire({
-                    icon: "success",
-                    title: "Pengajuan Berhasil",
-                    html:
-                        "Kode Pengajuan Anda:<br><br>" +
-                        "<b>" +
-                        res.kode_pengajuan +
-                        "</b><br><br>" +
-                        "Simpan kode ini untuk mengecek status pengajuan.",
-                });
-
-                // Tutup modal
-                const modal = bootstrap.Modal.getInstance(
-                    document.getElementById("ajukanSuratModal"),
-                );
-
-                modal.hide();
-
-                // Reset form
-                document.getElementById("formValidasiNik").reset();
-                document.getElementById("formPengajuan").reset();
-
-                // Kembali ke step pertama
-                document.getElementById("step-validasi").style.display =
-                    "block";
-                document.getElementById("step-pengajuan").style.display =
-                    "none";
-                document.getElementById("formPengajuan").style.display = "none";
-            } else {
-                console.log(res);
-
-                Swal.fire({
-                    icon: "error",
-                    title: "Pengajuan Gagal",
-                    text: res.message ?? "Terjadi kesalahan.",
-                });
-            }
-        })
-        .catch(async (err) => {
-            console.log("ERROR :", err);
-
-            Swal.fire({
-                icon: "error",
-                title: "Error",
-                text: err,
-            });
-        });
-}
-
-document
-    .getElementById("btnKembaliPengajuan")
-    .addEventListener("click", function () {
-        formPengajuan.reset();
-        formValidasi.reset();
-
-        document.getElementById("formPengajuan").style.display = "none";
-        document.getElementById("formValidasiNik").style.display = "block";
-
-        document.getElementById("step-pengajuan").style.display = "none";
-        document.getElementById("step-validasi").style.display = "block";
-
-        document.getElementById("nikError").innerHTML = "";
-    });
-
-const modalAjukan = document.getElementById("ajukanSuratModal");
-
-modalAjukan.addEventListener("hidden.bs.modal", function () {
-    formValidasi.reset();
-    formPengajuan.reset();
-
-    document.getElementById("wrapper-persyaratan").innerHTML = `
-        <div class="text-center text-muted py-3">
-            Pilih jenis surat terlebih dahulu.
-        </div>
-    `;
-
-    document.getElementById("nikError").innerHTML = "";
-
-    document.getElementById("formValidasiNik").style.display = "block";
-    document.getElementById("formPengajuan").style.display = "none";
-
-    document.getElementById("step-validasi").style.display = "block";
-    document.getElementById("step-pengajuan").style.display = "none";
-});
-
-const jenisSurat = document.getElementById("jenis_surat");
-
-jenisSurat.addEventListener("change", function () {
-    let id = this.value;
-
-    if (!id) {
-        return;
-    }
-
-    fetch("/form-pengajuan/" + id)
-        .then((response) => response.json())
-        .then((res) => {
-            let html = "";
-
-            if (res.persyaratan.length == 0) {
-                html = `
-                    <div class="alert alert-warning mb-0">
-                        Jenis surat ini tidak memiliki persyaratan.
-                    </div>
-                `;
-            } else {
-                res.persyaratan.forEach(function (item) {
-                    if (item.tipe_input == "file") {
-                        html += `
-                            <div class="mb-3">
-
-                                <label class="form-label fw-semibold">
-
-                                    ${item.nama_persyaratan}
-
-                                    ${
-                                        item.is_required
-                                            ? '<span class="text-danger">*</span>'
-                                            : '<span class="badge bg-secondary ms-2">Opsional</span>'
-                                    }
-
-                                </label>
-
-                                <input
-                                    type="file"
-                                    class="form-control"
-                                    name="lampiran[${item.id}]"
-                                    accept=".pdf,.jpg,.jpeg,.png"
-                                    ${item.is_required ? "required" : ""}
-                                >
-
-                            </div>
-                        `;
-                    } else {
-                        html += `
-                            <div class="mb-3">
-
-                                <label class="form-label fw-semibold">
-
-                                    ${item.nama_persyaratan}
-
-                                    ${
-                                        item.is_required
-                                            ? '<span class="text-danger">*</span>'
-                                            : '<span class="badge bg-secondary ms-2">Opsional</span>'
-                                    }
-
-                                </label>
-
-                                <textarea
-                                    class="form-control"
-                                    rows="3"
-                                    name="keterangan[${item.id}]"
-                                    placeholder="Masukkan ${item.nama_persyaratan.toLowerCase()}..."
-                                    ${item.is_required ? "required" : ""}
-                                ></textarea>
-
-                            </div>
-                        `;
-                    }
-                });
-            }
-
-            document.getElementById("wrapper-persyaratan").innerHTML = html;
-        });
-});
 
 const formStatus = document.getElementById("formCekStatus");
 
@@ -407,3 +168,180 @@ document
         document.getElementById("status_tanggal").innerHTML = "";
         document.getElementById("status_catatan").innerHTML = "-";
     });
+
+const kategori = document.getElementById("kategori_surat");
+const jenis = document.getElementById("jenis_surat");
+
+if (kategori && jenis) {
+    kategori.addEventListener("change", function () {
+        let id = this.value;
+
+        if (!id) {
+            jenis.innerHTML =
+                '<option value="">-- Pilih Jenis Surat --</option>';
+
+            return;
+        }
+
+        jenis.innerHTML = '<option value="">Memuat...</option>';
+
+        fetch("/kategori/" + id + "/jenis-surat")
+            .then((res) => res.json())
+            .then((res) => {
+                jenis.innerHTML =
+                    '<option value="">-- Pilih Jenis Surat --</option>';
+
+                res.jenis.forEach((item) => {
+                    jenis.innerHTML += `
+                        <option value="${item.id}">
+                            ${item.nama_surat}
+                        </option>
+                    `;
+                });
+            });
+    });
+}
+
+if (jenis) {
+    jenis.addEventListener("change", function () {
+        let id = this.value;
+
+        if (!id) {
+            document.getElementById("wrapper-persyaratan").innerHTML =
+                '<div class="text-center text-muted">Pilih jenis surat terlebih dahulu.</div>';
+
+            return;
+        }
+
+        fetch("/form-pengajuan/" + id)
+            .then((res) => res.json())
+            .then((res) => {
+                let html = "";
+
+                if (res.persyaratan.length === 0) {
+                    html = `
+                        <div class="alert alert-warning mb-0">
+                            Tidak ada persyaratan.
+                        </div>
+                    `;
+                } else {
+                    res.persyaratan.forEach((item) => {
+                        if (item.tipe_input === "file") {
+                            html += `
+                                <div class="mb-3">
+
+                                    <label class="form-label fw-semibold">
+
+                                        ${item.nama_persyaratan}
+
+                                        ${
+                                            item.is_required
+                                                ? '<span class="text-danger">*</span>'
+                                                : ""
+                                        }
+
+                                    </label>
+
+                                    <input
+                                        type="file"
+                                        class="form-control"
+                                        name="lampiran[${item.id}]"
+                                        accept=".pdf,.jpg,.jpeg,.png"
+                                        ${item.is_required ? "required" : ""}
+                                    >
+
+                                </div>
+                            `;
+                        } else {
+                            html += `
+                                <div class="mb-3">
+
+                                    <label class="form-label fw-semibold">
+
+                                        ${item.nama_persyaratan}
+
+                                        ${
+                                            item.is_required
+                                                ? '<span class="text-danger">*</span>'
+                                                : ""
+                                        }
+
+                                    </label>
+
+                                    <textarea
+                                        class="form-control"
+                                        rows="3"
+                                        name="keterangan[${item.id}]"
+                                        placeholder="Masukkan ${item.nama_persyaratan}"
+                                        ${item.is_required ? "required" : ""}
+                                    ></textarea>
+
+                                </div>
+                            `;
+                        }
+                    });
+                }
+
+                document.getElementById("wrapper-persyaratan").innerHTML = html;
+            });
+    });
+}
+
+const formPengajuan = document.getElementById("formPengajuan");
+
+formPengajuan.addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const btn = document.getElementById("btnSubmitPengajuan");
+
+    btn.disabled = true;
+    btn.innerHTML =
+        '<span class="spinner-border spinner-border-sm me-2"></span>Mengirim...';
+
+    let formData = new FormData(this);
+
+    fetch(this.action, {
+        method: "POST",
+        headers: {
+            "X-CSRF-TOKEN": window.csrfToken,
+            Accept: "application/json",
+        },
+        body: formData,
+    })
+        .then((res) => res.json())
+        .then((res) => {
+            btn.disabled = false;
+            btn.innerHTML = "Kirim Pengajuan";
+
+            if (res.status) {
+                Swal.fire({
+                    icon: "success",
+                    title: "Pengajuan Berhasil",
+                    html:
+                        "Kode Pengajuan Anda<br><br><b>" +
+                        res.kode_pengajuan +
+                        "</b><br><br>Simpan kode ini untuk mengecek status.",
+                }).then(() => {
+                    window.location.href = "/";
+                });
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: "Gagal",
+                    text: res.message,
+                });
+            }
+        })
+        .catch((err) => {
+            btn.disabled = false;
+            btn.innerHTML = "Kirim Pengajuan";
+
+            console.log(err);
+
+            Swal.fire({
+                icon: "error",
+                title: "Server Error",
+                text: "Terjadi kesalahan.",
+            });
+        });
+});

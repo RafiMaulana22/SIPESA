@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Landing;
 
 use App\Http\Controllers\Controller;
 use App\Models\Admin\JenisSuratModel;
+use App\Models\Admin\KategoriSuratModel;
 use App\Models\Admin\LampiranPengajuanModel;
 use App\Models\Admin\PendudukModel;
 use App\Models\Admin\PengajuanSuratModel;
@@ -24,21 +25,13 @@ class PengajuanSuratController extends Controller
         if (!$penduduk) {
             return response()->json([
                 'status' => false,
-                'message' => 'NIK tidak ditemukan pada database penduduk.',
+                'message' => 'NIK tidak ditemukan.',
             ]);
         }
 
         return response()->json([
             'status' => true,
-
-            'penduduk' => [
-                'id' => $penduduk->id,
-                'nik' => $penduduk->nik,
-                'nama' => $penduduk->nama,
-                'alamat' => $penduduk->alamat,
-            ],
-
-            'jenisSurat' => JenisSuratModel::where('is_active', 1)->select('id', 'nama_surat')->get(),
+            'redirect' => route('landing.form', $penduduk->nik),
         ]);
     }
 
@@ -202,6 +195,28 @@ class PengajuanSuratController extends Controller
                     'tipe_input' => $item->tipe_input,
                 ];
             }),
+        ]);
+    }
+
+    public function form($nik)
+    {
+        $penduduk = PendudukModel::where('nik', $nik)->firstOrFail();
+
+        $kategori = KategoriSuratModel::orderBy('nama_kategori')->get();
+
+        return view('landing.pengajuan.form', compact('penduduk', 'kategori'));
+    }
+
+    public function getJenisSurat($kategori)
+    {
+        $jenis = JenisSuratModel::where('kategori_surat_id', $kategori)
+            ->where('is_active', 1)
+            ->orderBy('nama_surat')
+            ->get(['id', 'nama_surat']);
+
+        return response()->json([
+            'status' => true,
+            'jenis' => $jenis,
         ]);
     }
 }

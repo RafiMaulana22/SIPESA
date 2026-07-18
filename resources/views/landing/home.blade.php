@@ -37,7 +37,7 @@
 
                 <div class="col-lg-6 text-center">
                     <div class="position-relative d-inline-block">
-                        <img src="https://placehold.co/600x450" class="img-fluid rounded-4 shadow-lg border border-light"
+                        <img src="{{ asset('balai-desa.jpeg') }}" class="img-fluid rounded-4 shadow-lg border border-light"
                             alt="Hero SIPESA">
                     </div>
                 </div>

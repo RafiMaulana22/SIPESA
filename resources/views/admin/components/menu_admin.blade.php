@@ -63,10 +63,6 @@
         </a>
     </li>  --}}
 </ul>
-<div class="add-menu-sidebar">
-    <img src="images/calendar.png" alt="" class="me-3">
-    <a href="workoutplan.html" class="font-w500 mb-0">Create Workout Plan Now</a>
-</div>
 <div class="copyright">
     <p><strong>SIPESA Admin Dashboard</strong> © 2026 All Rights Reserved</p>
     <p>Made with <span class="heart"></span> by SUPERSITESTUDIO</p>

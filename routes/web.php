@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\ManajemenUserController;
 use App\Http\Controllers\Admin\PendudukController;
 use App\Http\Controllers\Admin\PengajuanSuratController;
 use App\Http\Controllers\Admin\PersyaratanSuratController;
+use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\TemplateSuratController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
@@ -99,6 +100,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/manajemen-user', [ManajemenUserController::class, 'store'])->name('manajemen-user.store');
     Route::put('/manajemen-user/{id}', [ManajemenUserController::class, 'update'])->name('manajemen-user.update');
     Route::delete('/manajemen-user/{id}', [ManajemenUserController::class, 'destroy'])->name('manajemen-user.destroy');
+
+    // Profile
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
     // Auth Logout
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');

@@ -1,8 +1,8 @@
 <div class="text-center auth-header-content px-4 py-3 text-white">
 
     <div class="mb-4 d-inline-block p-3 bg-white bg-opacity-10 rounded-4 backdrop-blur shadow-sm">
-        <img src="{{ asset('assets/images/logo.png') }}" class="img-fluid auth-logo-img" alt="Logo Desa"
-            style="width: 72px; height: 72px; object-fit: contain;">
+        <img src="{{ asset('logo.png') }}" class="img-fluid auth-logo-img" alt="Logo Desa"
+            style="width: 200px; height: 200px; object-fit: contain;">
     </div>
 
     <h3 class="fw-bold text-white mb-2" style="letter-spacing: -0.01em;">
@@ -13,11 +13,6 @@
         Sistem digitalisasi tata kelola administrasi surat-menyurat mandiri bagi segenap warga masyarakat Desa
         Payudan-Dungdang.
     </p>
-
-    <div class="my-4 pt-2">
-        <img src="{{ asset('assets/images/login-illustration.png') }}" class="img-fluid my-2" style="max-height: 260px;"
-            alt="Ilustrasi Login">
-    </div>
 
     <div class="row g-3 text-start mx-auto mt-4" style="max-width: 440px; font-size: 0.85rem;">
         <div class="col-6">

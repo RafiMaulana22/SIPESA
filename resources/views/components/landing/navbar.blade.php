@@ -2,7 +2,7 @@
     <div class="container">
 
         <a class="navbar-brand d-flex align-items-center gap-2" href="{{ route('landing.home') }}">
-            <img src="{{ asset('assets/images/logo.png') }}" alt="Logo Desa" width="42" height="42"
+            <img src="{{ asset('logo.png') }}" alt="Logo Desa" width="42" height="42"
                 class="object-fit-contain">
             <div class="brand-text">
                 <div class="fw-bold text-primary lh-1 mb-1" style="font-size: 1.25rem; letter-spacing: -0.01em;">

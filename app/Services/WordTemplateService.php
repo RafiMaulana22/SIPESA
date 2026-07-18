@@ -18,6 +18,8 @@ class WordTemplateService
 
     $processor = new TemplateProcessor($pathTemplate);
 
+    $processor->setValue('nomor_surat', $pengajuan->kode_pengajuan ?? '');
+
     // ==========================
     // DATA PENDUDUK
     // ==========================

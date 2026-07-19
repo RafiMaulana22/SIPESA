@@ -21,7 +21,7 @@ class PengajuanSuratController extends Controller
             'nik' => 'required|digits:16',
         ]);
 
-        $penduduk = PendudukModel::where('nik', $request->nik)->first();
+        $penduduk = PendudukModel::where('nik_hash', hash('sha256', $request->nik))->first();
 
         if (!$penduduk) {
             return response()->json([
@@ -166,7 +166,7 @@ class PengajuanSuratController extends Controller
 
     public function form($nik)
     {
-        $penduduk = PendudukModel::where('nik', $nik)->firstOrFail();
+        $penduduk = PendudukModel::where('nik_hash', hash('sha256', $nik))->firstOrFail();
 
         $kategori = KategoriSuratModel::orderBy('nama_kategori')->get();
 
@@ -192,7 +192,7 @@ class PengajuanSuratController extends Controller
             'nik' => 'required|digits:16',
         ]);
 
-        $penduduk = PendudukModel::where('nik', $request->nik)->first();
+        $penduduk = PendudukModel::where('nik_hash', hash('sha256', $request->nik))->first();
 
         if (!$penduduk) {
             return response()->json([
@@ -209,7 +209,7 @@ class PengajuanSuratController extends Controller
 
     public function riwayat($nik)
     {
-        $penduduk = PendudukModel::where('nik', $nik)->firstOrFail();
+        $penduduk = PendudukModel::where('nik_hash', hash('sha256', $nik))->firstOrFail();
 
         $pengajuans = PengajuanSuratModel::with('jenisSurat')->where('penduduk_id', $penduduk->id)->latest()->get();
 

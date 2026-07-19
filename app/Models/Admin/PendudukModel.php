@@ -24,6 +24,7 @@ class PendudukModel extends Model
     public function setNikAttribute($value)
     {
         $this->attributes['nik'] = Crypt::encryptString($value);
+        $this->attributes['nik_hash'] = hash('sha256', $value);
     }
 
     public function getNikAttribute($value)
@@ -42,6 +43,7 @@ class PendudukModel extends Model
     public function setNoKkAttribute($value)
     {
         $this->attributes['no_kk'] = Crypt::encryptString($value);
+        $this->attributes['no_kk_hash'] = hash('sha256', $value);
     }
 
     public function getNoKkAttribute($value)
@@ -61,6 +63,7 @@ class PendudukModel extends Model
     {
         if ($value) {
             $this->attributes['no_hp'] = Crypt::encryptString($value);
+            $this->attributes['no_hp_hash'] = hash('sha256', $value);
         }
     }
 

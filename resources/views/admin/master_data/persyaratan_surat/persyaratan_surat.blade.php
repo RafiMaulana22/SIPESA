@@ -179,7 +179,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="text-center text-muted py-4 small">
+                            <td colspan="7" class="text-center text-muted py-4 small">
                                 <i class="bi bi-file-earmark-text d-block fs-3 mb-2 text-opacity-50 text-secondary"></i>
                                 Belum ada parameter berkas persyaratan untuk jenis surat ini.
                             </td>

@@ -50,7 +50,7 @@
                             Ingat Saya
                         </label>
                     </div>
-                    <a href="/forgot-password" class="auth-link small">Lupa Password?</a>
+                    {{--  <a href="/forgot-password" class="auth-link small">Lupa Password?</a>  --}}
                 </div>
 
                 <button type="submit"

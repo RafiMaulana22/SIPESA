@@ -10,8 +10,8 @@ return new class extends Migration {
         Schema::create('penduduks', function (Blueprint $table) {
             $table->id();
 
-            $table->string('nik', 16)->unique();
-            $table->string('no_kk', 16);
+            $table->string('nik')->unique();
+            $table->string('no_kk');
 
             $table->string('nama');
             $table->string('tempat_lahir');
@@ -23,7 +23,7 @@ return new class extends Migration {
             $table->string('rt', 3);
             $table->string('rw', 3);
 
-            $table->string('no_hp', 15)->nullable();
+            $table->string('no_hp')->nullable();
 
             $table->string('status_penduduk')->nullable();
 

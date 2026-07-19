@@ -172,48 +172,6 @@
 
     </div>
 
-    <div class="card">
-        <div class="card-body">
-            <div class="row g-3">
-                <div class="col-lg-4">
-                    <div class="form-group mb-4">
-                        <select class="form-control default-select">
-                            <option selected>Semua Status</option>
-                            <option>Menunggu</option>
-                            <option>Diproses</option>
-                            <option>Selesai</option>
-                            <option>Ditolak</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="col-lg-4">
-                    <div class="form-group mb-4">
-                        <select name="jenis_surat" class="form-control default-select">
-
-                            <option value="">
-                                Semua Jenis Surat
-                            </option>
-
-                            @foreach ($jenisSurats as $jenis)
-                                <option value="{{ $jenis->id }}" @selected(request('jenis_surat') == $jenis->id)>
-
-                                    {{ $jenis->nama_surat }}
-
-                                </option>
-                            @endforeach
-
-                        </select>
-                    </div>
-                </div>
-
-                <div class="col-lg-4">
-                    <input type="date" class="form-control">
-                </div>
-            </div>
-        </div>
-    </div>
-
     <div class="row">
         <div class="col-12">
             <div class="card">

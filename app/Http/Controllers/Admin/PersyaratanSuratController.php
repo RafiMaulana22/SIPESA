@@ -34,26 +34,20 @@ class PersyaratanSuratController extends Controller
                 ],
             );
 
-            $placeholder = $this->generatePlaceholder($request->nama_persyaratan);
-
-            if (PersyaratanSuratModel::where('placeholder', $placeholder)->exists()) {
-                return back()->with('error', 'Placeholder otomatis "' . $placeholder . '" sudah digunakan.');
-            }
+            $placeholder = $this->generateUniquePlaceholder($request->nama_persyaratan);
 
             $jenisSurat = JenisSuratModel::findOrFail($id);
 
             $jenisSurat->persyaratan()->create([
                 'nama_persyaratan' => $request->nama_persyaratan,
-                'placeholder' => $this->generatePlaceholder($request->nama_persyaratan),
+                'placeholder' => $placeholder,
                 'is_required' => $request->is_required,
                 'tipe_input' => $request->tipe_input,
             ]);
 
             return redirect()->route('persyaratan-surat.index', $jenisSurat->id)->with('success', 'Persyaratan berhasil ditambahkan.');
         } catch (\Exception $e) {
-            return redirect()
-                ->route('persyaratan-surat.index', $id)
-                ->with('error', 'Terjadi kesalahan saat menambahkan persyaratan: ' . $e->getMessage());
+            return redirect()->route('persyaratan-surat.index', $id)->with('error', 'Terjadi kesalahan saat menambahkan persyaratan.');
         }
     }
 
@@ -75,26 +69,20 @@ class PersyaratanSuratController extends Controller
                 ],
             );
 
-            $placeholder = $this->generatePlaceholder($request->nama_persyaratan);
-
-            if (PersyaratanSuratModel::where('placeholder', $placeholder)->where('id', '!=', $id)->exists()) {
-                return back()->with('error', 'Placeholder otomatis "' . $placeholder . '" sudah digunakan.');
-            }
+            $placeholder = $this->generateUniquePlaceholder($request->nama_persyaratan, $id);
 
             $persyaratan = PersyaratanSuratModel::findOrFail($id);
 
             $persyaratan->update([
                 'nama_persyaratan' => $request->nama_persyaratan,
-                'placeholder' => $this->generatePlaceholder($request->nama_persyaratan),
+                'placeholder' => $placeholder,
                 'is_required' => $request->is_required,
                 'tipe_input' => $request->tipe_input,
             ]);
 
             return redirect()->route('persyaratan-surat.index', $persyaratan->jenis_surat_id)->with('success', 'Persyaratan berhasil diperbarui.');
         } catch (\Exception $e) {
-            return redirect()
-                ->route('persyaratan-surat.index', $id)
-                ->with('error', 'Terjadi kesalahan saat memperbarui persyaratan: ' . $e->getMessage());
+            return redirect()->route('persyaratan-surat.index', $id)->with('error', 'Terjadi kesalahan saat memperbarui persyaratan.');
         }
     }
 
@@ -106,9 +94,7 @@ class PersyaratanSuratController extends Controller
 
             return redirect()->route('persyaratan-surat.index', $persyaratan->jenis_surat_id)->with('success', 'Persyaratan berhasil dihapus.');
         } catch (\Exception $e) {
-            return redirect()
-                ->route('persyaratan-surat.index', $id)
-                ->with('error', 'Terjadi kesalahan saat menghapus persyaratan: ' . $e->getMessage());
+            return redirect()->route('persyaratan-surat.index', $id)->with('error', 'Persyaratan gagal dihapus.');
         }
     }
 
@@ -123,5 +109,26 @@ class PersyaratanSuratController extends Controller
         $placeholder = preg_replace('/_+/', '_', $placeholder);
 
         return trim($placeholder, '_');
+    }
+
+    private function generateUniquePlaceholder($nama, $ignoreId = null)
+    {
+        $placeholder = $this->generatePlaceholder($nama);
+
+        $original = $placeholder;
+        $i = 1;
+
+        while (
+            PersyaratanSuratModel::where('placeholder', $placeholder)
+                ->when($ignoreId, function ($q) use ($ignoreId) {
+                    $q->where('id', '!=', $ignoreId);
+                })
+                ->exists()
+        ) {
+            $placeholder = $original . '_' . $i;
+            $i++;
+        }
+
+        return $placeholder;
     }
 }

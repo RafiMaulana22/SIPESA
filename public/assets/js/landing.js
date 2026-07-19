@@ -213,10 +213,18 @@ if (formPengajuan) {
                     Swal.fire({
                         icon: "success",
                         title: "Pengajuan Berhasil",
-                        html:
-                            "Kode Pengajuan Anda<br><br><b>" +
-                            res.kode_pengajuan +
-                            "</b><br><br>Simpan kode ini untuk mengecek status.",
+                        html: `
+                            <p class="mb-2">
+                                Pengajuan surat berhasil dikirim.
+                            </p>
+
+                            <p class="mb-0">
+                                Gunakan <strong>NIK</strong> Anda untuk mengecek status
+                                pengajuan melalui menu <strong>Cek Status</strong>.
+                            </p>
+                        `,
+                        confirmButtonText: "Kembali ke Beranda",
+                        allowOutsideClick: false,
                     }).then(() => {
                         window.location.href = "/";
                     });

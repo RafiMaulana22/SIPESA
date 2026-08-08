@@ -210,20 +210,33 @@ if (formPengajuan) {
                 btn.innerHTML = "Kirim Pengajuan";
 
                 if (res.status) {
+                    // ==========================================
+                    // SURAT TANPA PERSYARATAN
+                    // ==========================================
+
+                    if (res.direct_pdf) {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Surat Berhasil Dibuat",
+                            text: "Surat Anda tidak memerlukan lampiran dan telah berhasil dibuat secara otomatis.",
+                            confirmButtonText: "Buka Surat",
+                            allowOutsideClick: false,
+                        }).then(() => {
+                            window.location.href = res.redirect;
+                        });
+
+                        return;
+                    }
+
+                    // ==========================================
+                    // SURAT DENGAN PERSYARATAN
+                    // ==========================================
+
                     Swal.fire({
                         icon: "success",
                         title: "Pengajuan Berhasil",
-                        html: `
-                            <p class="mb-2">
-                                Pengajuan surat berhasil dikirim.
-                            </p>
-
-                            <p class="mb-0">
-                                Gunakan <strong>NIK</strong> Anda untuk mengecek status
-                                pengajuan melalui menu <strong>Cek Status</strong>.
-                            </p>
-                        `,
-                        confirmButtonText: "Kembali ke Beranda",
+                        text: "Pengajuan surat berhasil dikirim dan akan diproses oleh petugas.",
+                        confirmButtonText: "OK",
                         allowOutsideClick: false,
                     }).then(() => {
                         window.location.href = "/";
@@ -231,8 +244,9 @@ if (formPengajuan) {
                 } else {
                     Swal.fire({
                         icon: "error",
-                        title: "Gagal",
-                        text: res.message,
+                        title: "Pengajuan Gagal",
+                        text: res.message || "Pengajuan tidak dapat diproses.",
+                        confirmButtonText: "OK",
                     });
                 }
             })

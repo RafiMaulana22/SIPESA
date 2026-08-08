@@ -22,30 +22,31 @@ use App\Http\Controllers\Landing\ProfilController;
 use App\Models\Admin\PersyaratanSuratModel;
 use Illuminate\Support\Facades\Route;
 
+// Landing Home
+Route::get('/', [HomeController::class, 'index'])->name('landing.home');
+
+// Landing Profil
+Route::get('/profil', [ProfilController::class, 'index'])->name('landing.profil');
+
+// Landing Layanan
+Route::get('/layanan', [LayananController::class, 'index'])->name('landing.layanan');
+
+// Landing Berita
+Route::get('/berita', [BeritaController::class, 'index'])->name('landing.berita');
+
+// Landing Pengajuan Surat
+Route::post('/validasi-nik', [LandingPengajuanSuratController::class, 'validasiNik'])->name('landing.validasi-nik');
+Route::post('/form-pengajuan', [LandingPengajuanSuratController::class, 'formPengajuan'])->name('landing.form-pengajuan');
+Route::get('/form-pengajuan/{id}', [LandingPengajuanSuratController::class, 'getPersyaratan'])->name('landing.get-persyaratan');
+Route::get('/pengajuan-surat/form/{nik}', [LandingPengajuanSuratController::class, 'form'])->name('landing.form');
+Route::get('/kategori/{kategori}/jenis-surat', [LandingPengajuanSuratController::class, 'getJenisSurat'])->name('landing.kategori.jenis');
+Route::post('/cek-status', [LandingPengajuanSuratController::class, 'validasiNikStatus'])->name('landing.cek-status');
+Route::get('/riwayat-pengajuan/{nik}', [LandingPengajuanSuratController::class, 'riwayat'])->name('landing.riwayat');
+Route::get('/detail-pengajuan/{kode}', [LandingPengajuanSuratController::class, 'detailPengajuan'])->name('landing.detail-pengajuan');
+Route::get('/download/{id}', [LandingPengajuanSuratController::class, 'download'])->name('landing.download');
+Route::get('/preview/{id}', [LandingPengajuanSuratController::class, 'preview'])->name('landing.preview');
+
 Route::middleware(['guest'])->group(function () {
-    // Landing Home
-    Route::get('/', [HomeController::class, 'index'])->name('landing.home');
-
-    // Landing Profil
-    Route::get('/profil', [ProfilController::class, 'index'])->name('landing.profil');
-
-    // Landing Layanan
-    Route::get('/layanan', [LayananController::class, 'index'])->name('landing.layanan');
-
-    // Landing Berita
-    Route::get('/berita', [BeritaController::class, 'index'])->name('landing.berita');
-
-    // Landing Pengajuan Surat
-    Route::post('/validasi-nik', [LandingPengajuanSuratController::class, 'validasiNik'])->name('landing.validasi-nik');
-    Route::post('/form-pengajuan', [LandingPengajuanSuratController::class, 'formPengajuan'])->name('landing.form-pengajuan');
-    Route::get('/form-pengajuan/{id}', [LandingPengajuanSuratController::class, 'getPersyaratan'])->name('landing.get-persyaratan');
-    Route::get('/pengajuan-surat/form/{nik}', [LandingPengajuanSuratController::class, 'form'])->name('landing.form');
-    Route::get('/kategori/{kategori}/jenis-surat', [LandingPengajuanSuratController::class, 'getJenisSurat'])->name('landing.kategori.jenis');
-    Route::post('/cek-status', [LandingPengajuanSuratController::class, 'validasiNikStatus'])->name('landing.cek-status');
-    Route::get('/riwayat-pengajuan/{nik}', [LandingPengajuanSuratController::class, 'riwayat'])->name('landing.riwayat');
-    Route::get('/detail-pengajuan/{kode}', [LandingPengajuanSuratController::class, 'detailPengajuan'])->name('landing.detail-pengajuan');
-    Route::get('/download/{id}', [LandingPengajuanSuratController::class, 'download'])->name('landing.download');
-
     // Auth Login
     Route::get('/login', [LoginController::class, 'index'])->name('login');
     Route::post('/login', [LoginController::class, 'login'])->name('login');

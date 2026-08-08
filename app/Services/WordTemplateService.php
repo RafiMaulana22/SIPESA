@@ -32,7 +32,7 @@ class WordTemplateService
 
         $processor->setValue('nomor_surat', $pengajuan->kode_pengajuan ?? '');
 
-        $processor->setValue('tanggal_surat', $pengajuan->created_at->locale('id')->translatedFormat('d F Y'));
+        $processor->setValue('tanggal_surat', $pengajuan->created_at ? $pengajuan->created_at->locale('id')->translatedFormat('d F Y') : '');
 
         // ==========================
         // DATA PENDUDUK
@@ -43,7 +43,7 @@ class WordTemplateService
         $processor->setValue('rt', $pengajuan->penduduk->rt);
         $processor->setValue('rw', $pengajuan->penduduk->rw);
         $processor->setValue('tempat_lahir', $pengajuan->penduduk->tempat_lahir);
-        $processor->setValue('tanggal_lahir', date('d-m-Y', strtotime($pengajuan->penduduk->tanggal_lahir)));
+        $processor->setValue('tanggal_lahir', $pengajuan->penduduk->tanggal_lahir ? \Carbon\Carbon::parse($pengajuan->penduduk->tanggal_lahir)->locale('id')->translatedFormat('d F Y') : '');
 
         $jenisKelamin = match ($pengajuan->penduduk->jenis_kelamin) {
             'L' => 'Laki-Laki',

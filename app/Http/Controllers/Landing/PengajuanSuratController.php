@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Landing;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin\ArsipSuratModel;
 use App\Models\Admin\JenisSuratModel;
 use App\Models\Admin\KategoriSuratModel;
 use App\Models\Admin\LampiranPengajuanModel;
 use App\Models\Admin\PendudukModel;
 use App\Models\Admin\PengajuanSuratModel;
+use App\Services\WordTemplateService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -15,6 +17,13 @@ use Illuminate\Support\Facades\Storage;
 
 class PengajuanSuratController extends Controller
 {
+    protected $wordService;
+
+    public function __construct(WordTemplateService $wordService)
+    {
+        $this->wordService = $wordService;
+    }
+
     public function validasiNik(Request $request)
     {
         $request->validate([
@@ -49,6 +58,9 @@ class PengajuanSuratController extends Controller
 
         $jenis = JenisSuratModel::with('persyaratan')->findOrFail($request->jenis_surat_id);
 
+        // ==========================================
+        // VALIDASI PERSYARATAN
+        // ==========================================
         foreach ($jenis->persyaratan as $item) {
             $rule = $item->is_required ? 'required' : 'nullable';
 
@@ -63,14 +75,36 @@ class PengajuanSuratController extends Controller
             }
         }
 
-        // Generate kode pengajuan
+        // ==========================================
+        // CEK APAKAH SURAT MEMILIKI PERSYARATAN
+        // ==========================================
+        $memilikiPersyaratan = $jenis->persyaratan->count() > 0;
+
+        // ==========================================
+        // GENERATE KODE PENGAJUAN
+        // ==========================================
         $kodePengajuan = 'PGJ-' . now()->format('YmdHis') . rand(100, 999);
 
-        // Nomor antrian hari ini
-        $nomorAntrian = PengajuanSuratModel::whereDate('tanggal_pengajuan', today())->count() + 1;
+        // ==========================================
+        // NOMOR ANTRIAN
+        // ==========================================
+        $nomorAntrian = PengajuanSuratModel::whereDate('tanggal_pengajuan', today())->max('nomor_antrian');
+
+        $nomorAntrian = ($nomorAntrian ?? 0) + 1;
+
         DB::beginTransaction();
 
         try {
+            // ==========================================
+            // STATUS AWAL
+            // ==========================================
+            // Jika tidak mempunyai persyaratan,
+            // langsung selesai.
+            $status = $memilikiPersyaratan ? 'menunggu' : 'selesai';
+
+            // ==========================================
+            // BUAT PENGAJUAN
+            // ==========================================
             $pengajuan = PengajuanSuratModel::create([
                 'kode_pengajuan' => $kodePengajuan,
                 'penduduk_id' => $request->penduduk_id,
@@ -80,13 +114,16 @@ class PengajuanSuratController extends Controller
                 'keperluan' => $request->keperluan,
                 'nama_usaha' => $request->nama_usaha,
                 'jenis_usaha' => $request->jenis_usaha,
-                'status' => 'menunggu',
+                'status' => $status,
             ]);
 
+            // ==========================================
+            // SIMPAN LAMPIRAN
+            // ==========================================
             foreach ($jenis->persyaratan as $item) {
-                //==============================
+                // ======================================
                 // FILE
-                //==============================
+                // ======================================
                 if ($item->tipe_input == 'file') {
                     if ($request->hasFile("lampiran.$item->id")) {
                         $file = $request->file("lampiran.$item->id");
@@ -104,9 +141,9 @@ class PengajuanSuratController extends Controller
                     }
                 }
 
-                //==============================
+                // ======================================
                 // KETERANGAN
-                //==============================
+                // ======================================
                 else {
                     LampiranPengajuanModel::create([
                         'pengajuan_surat_id' => $pengajuan->id,
@@ -119,22 +156,55 @@ class PengajuanSuratController extends Controller
                 }
             }
 
+            // ==========================================
+            // JIKA TIDAK ADA PERSYARATAN
+            // LANGSUNG GENERATE PDF
+            // ==========================================
+            if (!$memilikiPersyaratan) {
+                $pengajuan->load(['penduduk', 'jenisSurat', 'lampiran.persyaratan']);
+
+                // Panggil service generator surat
+                $namaFile = app(\App\Services\WordTemplateService::class)->generate($pengajuan);
+
+                // Simpan file PDF ke pengajuan
+                $pengajuan->update([
+                    'status' => 'selesai',
+                    'file_surat' => $namaFile,
+                ]);
+            }
+
             DB::commit();
+
+            // ==========================================
+            // RESPONSE
+            // ==========================================
+            if (!$memilikiPersyaratan) {
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Surat berhasil dibuat.',
+                    'kode_pengajuan' => $pengajuan->kode_pengajuan,
+                    'redirect' => route('landing.preview', $pengajuan->id),
+                ]);
+            }
 
             return response()->json([
                 'status' => true,
-                'message' => 'Pengajuan berhasil',
+                'message' => 'Pengajuan berhasil dikirim.',
                 'kode_pengajuan' => $pengajuan->kode_pengajuan,
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
 
-            Log::error($e);
+            Log::error('Gagal menyimpan pengajuan surat', [
+                'error' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile(),
+            ]);
 
             return response()->json(
                 [
                     'status' => false,
-                    'message' => $e->getMessage(),
+                    'message' => 'Terjadi kesalahan saat memproses pengajuan.',
                 ],
                 500,
             );
@@ -240,5 +310,22 @@ class PengajuanSuratController extends Controller
         }
 
         return response()->download($path);
+    }
+
+    public function preview($id)
+    {
+        $pengajuan = PengajuanSuratModel::findOrFail($id);
+
+        if (!$pengajuan->file_surat) {
+            abort(404, 'File surat tidak tersedia.');
+        }
+
+        $path = public_path('hasil_surat/' . $pengajuan->file_surat);
+
+        if (!file_exists($path)) {
+            abort(404, 'File surat tidak ditemukan.');
+        }
+
+        return response()->file($path);
     }
 }

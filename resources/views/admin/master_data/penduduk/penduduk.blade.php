@@ -13,70 +13,53 @@
         </div>
     </div>
 
-    <!-- AREA NOTIFIKASI SYSTEM -->
-    @if ($errors->any())
-        <div class="alert alert-danger rounded-3 mb-4 small border-0 shadow-sm">
-            <ul class="mb-0 ps-3">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+    <!-- NOTIFIKASI SYSTEM -->
+    @include('admin.components.alert-admin')
 
-    @if (session('success'))
-        <div class="alert alert-success alert-dismissible fade show rounded-3 mb-4 small border-0 shadow-sm d-flex align-items-center gap-2"
-            id="alertSuccess" role="alert">
-            <i class="bi bi-check-circle-fill fs-5"></i>
-            <div>
-                <strong>Berhasil!</strong> {{ session('success') }}
-            </div>
-            <button type="button" class="btn-close shadow-none" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-
-        <script>
-            setTimeout(function() {
-                let alertElement = document.getElementById('alertSuccess');
-                if (alertElement) {
-                    let bsAlert = new bootstrap.Alert(alertElement);
-                    bsAlert.close();
-                }
-            }, 2000);
-        </script>
-    @endif
-
-    <!-- SEKSI DATA TABEL -->
+    <!-- SEKSI DATA TABEL & FILTER BAR -->
     <div class="card bg-white border-0 shadow-sm rounded-4 overflow-hidden">
         <div
-            class="card-header bg-white p-4 border-0 d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
+            class="card-header bg-white p-4 border-0 d-flex flex-column flex-xl-row justify-content-between align-items-xl-center gap-3">
             <div>
                 <h5 class="mb-0 fw-bold " style="letter-spacing: -0.01em;">
                     Daftar Rekam Data Kependudukan
                 </h5>
             </div>
-            <div class="d-flex gap-2">
 
-                <button class="btn btn-success rounded-3 px-4 fw-medium shadow-none" data-bs-toggle="modal"
-                    data-bs-target="#modalImport">
+            <!-- Kelompok Filter Pencarian & Tombol Aksi -->
+            <div class="d-flex flex-column flex-sm-row align-items-stretch align-items-sm-center gap-2">
+                <form action="{{ route('penduduk.index') }}" method="GET" class="m-0">
+                    <div class="input-group search-box-modern shadow-none border bg-white">
+                        <span class="input-group-text bg-transparent border-0 ps-3">
+                            <i class="bi bi-search text-muted"></i>
+                        </span>
+                        <input type="text" name="search" class="form-control bg-transparent border-0 py-2 shadow-none"
+                            placeholder="Cari NIK, No KK, atau nama..." value="{{ request('search') }}">
+                        <button class="btn btn-primary px-3 rounded-2 m-1 small fw-medium" type="submit">
+                            Cari
+                        </button>
+                    </div>
+                </form>
 
-                    <i class="bi bi-file-earmark-excel-fill"></i>
-                    Import Excel
+                <div class="d-flex gap-2">
+                    <button
+                        class="btn btn-success rounded-3 px-3 py-2 fw-medium shadow-none text-white d-flex align-items-center justify-content-center gap-2 flex-grow-1 flex-sm-grow-0"
+                        data-bs-toggle="modal" data-bs-target="#modalImport">
+                        <i class="bi bi-file-earmark-excel-fill"></i> Import Excel
+                    </button>
 
-                </button>
-
-                <button class="btn btn-primary rounded-3 px-4 fw-medium shadow-none" data-bs-toggle="modal"
-                    data-bs-target="#modalTambah">
-
-                    <i class="bi bi-plus-circle-fill"></i>
-                    Tambah Penduduk
-
-                </button>
-
+                    <button
+                        class="btn btn-primary rounded-3 px-3 py-2 fw-medium shadow-none d-flex align-items-center justify-content-center gap-2 flex-grow-1 flex-sm-grow-0"
+                        data-bs-toggle="modal" data-bs-target="#modalTambah">
+                        <i class="bi bi-plus-circle-fill"></i> Tambah Penduduk
+                    </button>
+                </div>
             </div>
         </div>
 
+        <!-- TABEL REKAM DATA -->
         <div class="table-responsive px-2">
-            <table id="example" class="table table-hover align-middle mb-0 custom-admin-table w-100">
+            <table class="table table-hover align-middle mb-0 custom-admin-table w-100">
                 <thead>
                     <tr>
                         <th class="ps-3" width="6%">No</th>
@@ -85,15 +68,18 @@
                         <th>Nama Lengkap</th>
                         <th>L/P</th>
                         <th>Alamat Rumah</th>
-                        <th class="pe-3 text-end" width="18%">Aksi Kelola</th>
+                        <th class="pe-3 text-end" width="16%">Aksi Kelola</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($penduduk as $get)
+                    @forelse ($penduduk as $get)
                         <tr>
-                            <td class="ps-3 text-muted fw-medium">{{ $loop->iteration }}</td>
+                            <td class="ps-3 text-muted fw-medium">
+                                {{ $penduduk->firstItem() + $loop->index }}
+                            </td>
                             <td class="fw-bold ">{{ $get->nik }}</td>
-                            <td class="text-secondary font-monospace" style="font-size: 0.85rem;">{{ $get->no_kk }}</td>
+                            <td class="text-secondary font-monospace" style="font-size: 0.85rem;">{{ $get->no_kk }}
+                            </td>
                             <td class="fw-semibold ">{{ $get->nama }}</td>
                             <td>
                                 <span
@@ -125,477 +111,153 @@
                                 </div>
                             </td>
                         </tr>
-                    @endforeach
+                    @empty
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-5 small">
+                                <i class="bi bi-people d-block fs-3 mb-2 text-opacity-50 text-secondary"></i>
+                                Tidak ditemukan rekam data kependudukan yang sesuai.
+                            </td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
 
-        <div class="pb-4"></div>
+        <!-- FOOTER TABEL & PAGINASI -->
+        <div class="card-footer bg-white p-4 border-0 border-top">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+                <div class="text-muted small fw-medium">
+                    Menampilkan
+                    <strong class="">{{ $penduduk->firstItem() ?? 0 }}</strong>
+                    sampai
+                    <strong class="">{{ $penduduk->lastItem() ?? 0 }}</strong>
+                    dari
+                    <strong class="">{{ $penduduk->total() }}</strong>
+                    data penduduk
+                </div>
+
+                <div class="pagination-modern-wrapper">
+                    @if ($penduduk->hasPages())
+                        <nav aria-label="Pagination Penduduk">
+                            <ul class="pagination pagination-sm mb-0">
+
+                                {{-- Previous --}}
+                                @if ($penduduk->onFirstPage())
+                                    <li class="page-item disabled">
+                                        <span class="page-link">
+                                            <i class="bi bi-chevron-left"></i>
+                                        </span>
+                                    </li>
+                                @else
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ $penduduk->previousPageUrl() }}" rel="prev">
+                                            <i class="bi bi-chevron-left"></i>
+                                        </a>
+                                    </li>
+                                @endif
+
+                                {{-- Nomor Halaman --}}
+                                @foreach ($penduduk->getUrlRange(max(1, $penduduk->currentPage() - 2), min($penduduk->lastPage(), $penduduk->currentPage() + 2)) as $page => $url)
+                                    <li class="page-item {{ $page == $penduduk->currentPage() ? 'active' : '' }}">
+                                        <a class="page-link" href="{{ $url }}">
+                                            {{ $page }}
+                                        </a>
+                                    </li>
+                                @endforeach
+
+                                {{-- Next --}}
+                                @if ($penduduk->hasMorePages())
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ $penduduk->nextPageUrl() }}" rel="next">
+                                            <i class="bi bi-chevron-right"></i>
+                                        </a>
+                                    </li>
+                                @else
+                                    <li class="page-item disabled">
+                                        <span class="page-link">
+                                            <i class="bi bi-chevron-right"></i>
+                                        </span>
+                                    </li>
+                                @endif
+
+                            </ul>
+                        </nav>
+                    @endif
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- LOOPING MODAL DETAIL, EDIT & HAPUS -->
+    <!-- LOOPING MODAL COMPONENT (DETAIL, EDIT & HAPUS) -->
     @foreach ($penduduk as $get)
         <!-- Modal Detail -->
-        <div class="modal fade" id="detailModal{{ $get->id }}" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-lg">
-                <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden bg-white">
-                    <div class="modal-header border-0 pb-0 pt-4 px-4 d-flex align-items-start justify-content-between">
-                        <div>
-                            <h5 class="modal-title fw-bold " style="letter-spacing: -0.01em;">
-                                Detail Profil Penduduk
-                            </h5>
-                            <p class="text-muted small m-0 mt-1">Berkas rekam identitas lengkap kemasyarakatan desa.</p>
-                        </div>
-                        <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"
-                            aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body p-4">
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label text-muted small fw-medium mb-1">Nomor Induk Kependudukan
-                                    (NIK)
-                                </label>
-                                <input type="text" class="form-control bg-light border-0 py-2.5  fw-bold rounded-3"
-                                    value="{{ $get->nik }}" readonly>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label text-muted small fw-medium mb-1">Nomor Kartu Keluarga (KK)</label>
-                                <input type="text" class="form-control bg-light border-0 py-2.5  rounded-3"
-                                    value="{{ $get->no_kk }}" readonly>
-                            </div>
-                            <div class="col-md-12">
-                                <label class="form-label text-muted small fw-medium mb-1">Nama Lengkap Sesuai KTP</label>
-                                <input type="text" class="form-control bg-light border-0 py-2.5  fw-semibold rounded-3"
-                                    value="{{ $get->nama }}" readonly>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label text-muted small fw-medium mb-1">Tempat Lahir</label>
-                                <input type="text" class="form-control bg-light border-0 py-2.5  rounded-3"
-                                    value="{{ $get->tempat_lahir }}" readonly>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label text-muted small fw-medium mb-1">Tanggal Lahir</label>
-                                <input type="text" class="form-control bg-light border-0 py-2.5  rounded-3"
-                                    value="{{ \Carbon\Carbon::parse($get->tanggal_lahir)->translatedFormat('d F Y') }}"
-                                    readonly>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label text-muted small fw-medium mb-1">Jenis Kelamin</label>
-                                <input type="text" class="form-control bg-light border-0 py-2.5  rounded-3"
-                                    value="{{ $get->jenis_kelamin == 'L' ? 'Laki-Laki' : 'Perempuan' }}" readonly>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label text-muted small fw-medium mb-1">Agama</label>
-                                <input type="text" class="form-control bg-light border-0 py-2.5  rounded-3"
-                                    value="{{ $get->agama ?? '-' }}" readonly>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label text-muted small fw-medium mb-1">Pekerjaan</label>
-                                <input type="text" class="form-control bg-light border-0 py-2.5  rounded-3"
-                                    value="{{ $get->pekerjaan ?? '-' }}" readonly>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label text-muted small fw-medium mb-1">Nomor Kontak WhatsApp /
-                                    HP</label>
-                                <input type="text" class="form-control bg-light border-0 py-2.5  rounded-3"
-                                    value="{{ $get->no_hp ?? '-' }}" readonly>
-                            </div>
-                            <div class="col-md-8">
-                                <label class="form-label text-muted small fw-medium mb-1">Alamat Domisili Rumah</label>
-                                <input type="text" class="form-control bg-light border-0 py-2.5  rounded-3"
-                                    value="{{ $get->alamat }}" readonly>
-                            </div>
-                            <div class="col-md-2 col-6">
-                                <label class="form-label text-muted small fw-medium mb-1">RT</label>
-                                <input type="text" class="form-control bg-light border-0 py-2.5 text-center  rounded-3"
-                                    value="{{ $get->rt }}" readonly>
-                            </div>
-                            <div class="col-md-2 col-6">
-                                <label class="form-label text-muted small fw-medium mb-1">RW</label>
-                                <input type="text" class="form-control bg-light border-0 py-2.5 text-center  rounded-3"
-                                    value="{{ $get->rw }}" readonly>
-                            </div>
-                            <div class="col-md-12">
-                                <label class="form-label text-muted small fw-medium mb-1">Status Perkawinan</label>
-                                <div>
-                                    <span
-                                        class="badge bg-secondary bg-opacity-10  border border-secondary border-opacity-10 px-3 py-2 rounded-2 fw-medium">
-                                        Status: {{ $get->status_perkawinan ?? '-' }}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer border-0 pt-0 pb-4 px-4">
-                        <button type="button"
-                            class="btn btn-light rounded-3 px-4 fw-medium text-secondary w-100 w-sm-auto"
-                            data-bs-dismiss="modal">Tutup Rincian</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        @include('admin.master_data.penduduk.modal.detail')
 
         <!-- Modal Edit -->
-        <div class="modal fade" id="editModal{{ $get->id }}" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-lg">
-                <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden bg-white">
-                    <form action="{{ route('penduduk.update', $get->id) }}" method="POST">
-                        @csrf
-                        @method('PUT')
-                        <div class="modal-header border-0 pb-0 pt-4 px-4 d-flex align-items-start justify-content-between">
-                            <div>
-                                <h5 class="modal-title fw-bold " style="letter-spacing: -0.01em;">
-                                    Ubah Data Kependudukan
-                                </h5>
-                                <p class="text-muted small m-0 mt-1">Perbarui entri data kependudukan penduduk desa secara
-                                    akurat.</p>
-                            </div>
-                            <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"
-                                aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body p-4">
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label class="form-label fw-medium  small mb-2">Nomor NIK</label>
-                                    <input type="text" name="nik"
-                                        class="form-control search-box-modern py-2.5 bg-white border" maxlength="16"
-                                        value="{{ $get->nik }}" required
-                                        oninput="this.value=this.value.replace(/[^0-9]/g,'')">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label fw-medium  small mb-2">Nomor Kartu Keluarga
-                                        (KK)</label>
-                                    <input type="text" name="no_kk"
-                                        class="form-control search-box-modern py-2.5 bg-white border" maxlength="16"
-                                        value="{{ $get->no_kk }}" required
-                                        oninput="this.value=this.value.replace(/[^0-9]/g,'')">
-                                </div>
-                                <div class="col-md-12">
-                                    <label class="form-label fw-medium  small mb-2">Nama Lengkap</label>
-                                    <input type="text" name="nama"
-                                        class="form-control search-box-modern py-2.5 bg-white border"
-                                        value="{{ $get->nama }}" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label fw-medium  small mb-2">Tempat Lahir</label>
-                                    <input type="text" name="tempat_lahir"
-                                        class="form-control search-box-modern py-2.5 bg-white border"
-                                        value="{{ $get->tempat_lahir }}" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label fw-medium  small mb-2">Tanggal Lahir</label>
-                                    <input type="date" name="tanggal_lahir"
-                                        class="form-control date-custom py-2.5 bg-white border"
-                                        value="{{ \Carbon\Carbon::parse($get->tanggal_lahir)->format('Y-m-d') }}"
-                                        required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label fw-medium  small mb-2">Jenis Kelamin</label>
-                                    <select name="jenis_kelamin" class="form-control default-select" required>
-                                        <option value="L" {{ $get->jenis_kelamin == 'L' ? 'selected' : '' }}>
-                                            Laki-Laki</option>
-                                        <option value="P" {{ $get->jenis_kelamin == 'P' ? 'selected' : '' }}>
-                                            Perempuan</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label fw-medium  small mb-2">Agama</label>
-                                    <select name="agama" class="form-control default-select" required>
-                                        @foreach (['Islam', 'Kristen', 'Katolik', 'Hindu', 'Budha', 'Konghucu'] as $agm)
-                                            <option value="{{ $agm }}"
-                                                {{ $get->agama == $agm ? 'selected' : '' }}>{{ $agm }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label fw-medium  small mb-2">Pekerjaan</label>
-                                    <input type="text" name="pekerjaan"
-                                        class="form-control search-box-modern py-2.5 bg-white border"
-                                        value="{{ $get->pekerjaan }}" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label fw-medium  small mb-2">No. HP / WA</label>
-                                    <input type="text" name="no_hp"
-                                        class="form-control search-box-modern py-2.5 bg-white border"
-                                        value="{{ $get->no_hp }}"
-                                        oninput="this.value=this.value.replace(/[^0-9]/g,'')">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label fw-medium  small mb-2">Alamat Jalan / Dusun</label>
-                                    <input type="text" name="alamat"
-                                        class="form-control search-box-modern py-2.5 bg-white border"
-                                        value="{{ $get->alamat }}" required>
-                                </div>
-                                <div class="col-md-3 col-6">
-                                    <label class="form-label fw-medium  small mb-2">RT</label>
-                                    <input type="text" name="rt"
-                                        class="form-control search-box-modern py-2.5 text-center bg-white border"
-                                        maxlength="3" value="{{ $get->rt }}" required
-                                        oninput="this.value=this.value.replace(/[^0-9]/g,'')">
-                                </div>
-                                <div class="col-md-3 col-6">
-                                    <label class="form-label fw-medium  small mb-2">RW</label>
-                                    <input type="text" name="rw"
-                                        class="form-control search-box-modern py-2.5 text-center bg-white border"
-                                        maxlength="3" value="{{ $get->rw }}" required
-                                        oninput="this.value=this.value.replace(/[^0-9]/g,'')">
-                                </div>
-                                <div class="col-md-12">
-                                    <label class="form-label fw-medium  small mb-2">Status Perkawinan</label>
-                                    <select name="status_perkawinan" class="form-control default-select" required>
-                                        @foreach (['Belum Menikah', 'Menikah', 'Cerai Hidup', 'Cerai Mati'] as $stts)
-                                            <option value="{{ $stts }}"
-                                                {{ $get->status_perkawinan == $stts ? 'selected' : '' }}>{{ $stts }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer border-0 pt-0 pb-4 px-4 gap-2">
-                            <button type="button"
-                                class="btn btn-light rounded-3 px-4 fw-medium text-secondary flex-grow-1 flex-sm-grow-0"
-                                data-bs-dismiss="modal">Batal</button>
-                            <button type="submit"
-                                class="btn btn-primary rounded-3 px-4 fw-medium flex-grow-1 flex-sm-grow-0">Update Basis
-                                Data</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
+        @include('admin.master_data.penduduk.modal.edit')
 
         <!-- Modal Hapus -->
-        <div class="modal fade" id="ModalHapus{{ $get->id }}" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden bg-white">
-                    <form action="{{ route('penduduk.destroy', $get->id) }}" method="POST">
-                        @csrf
-                        @method('DELETE')
-                        <div class="modal-header border-0 pb-0 pt-4 px-4 d-flex align-items-start justify-content-between">
-                            <div>
-                                <h5 class="modal-title fw-bold " style="letter-spacing: -0.01em;">Peringatan
-                                    Penting !</h5>
-                                <p class="text-muted small m-0 mt-1">Konfirmasi penghapusan data penduduk permanen.</p>
-                            </div>
-                            <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"></button>
-                        </div>
-                        <div class="modal-body p-4 text-secondary">
-                            Apakah Anda benar-benar yakin ingin menghapus data kependudukan atas nama:<br>
-                            <strong class=" d-block mt-2 fs-6"><i class="bi bi-person-x text-danger me-1"></i>
-                                {{ $get->nama }}</strong>
-                            <span class="text-danger small mt-2 d-block"><i class="bi bi-info-circle"></i> Catatan:
-                                Tindakan ini akan menghapus data pelaporan terkait dari riwayat FIFO layanan.</span>
-                        </div>
-                        <div class="modal-footer border-0 pt-0 pb-4 px-4 gap-2">
-                            <button type="button"
-                                class="btn btn-light rounded-3 px-4 fw-medium text-secondary flex-grow-1 flex-sm-grow-0"
-                                data-bs-dismiss="modal">Batal</button>
-                            <button type="submit"
-                                class="btn btn-danger rounded-3 px-4 fw-medium flex-grow-1 flex-sm-grow-0">Ya, Hapus
-                                Data</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
+        @include('admin.master_data.penduduk.modal.hapus')
     @endforeach
 
-    <!-- Modal Tambah -->
-    <div class="modal fade" id="modalTambah" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden bg-white">
-                <form action="{{ route('penduduk.store') }}" method="POST">
-                    @csrf
-                    <div class="modal-header border-0 pb-0 pt-4 px-4 d-flex align-items-start justify-content-between">
-                        <div>
-                            <h5 class="modal-title fw-bold " style="letter-spacing: -0.01em;">
-                                Tambah Data Penduduk Baru
-                            </h5>
-                            <p class="text-muted small m-0 mt-1">Daftarkan data rekam kependudukan warga baru secara
-                                manual.</p>
-                        </div>
-                        <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"
-                            aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body p-4">
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label fw-medium  small mb-2">Nomor NIK (16 Digit)</label>
-                                <input type="text" name="nik"
-                                    class="form-control search-box-modern py-2.5 bg-white border"
-                                    placeholder="Masukkan 16 digit NIK" maxlength="16" required
-                                    oninput="this.value=this.value.replace(/[^0-9]/g,'')">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-medium  small mb-2">Nomor Kartu Keluarga (KK)</label>
-                                <input type="text" name="no_kk"
-                                    class="form-control search-box-modern py-2.5 bg-white border"
-                                    placeholder="Masukkan 16 digit No. KK" maxlength="16" required
-                                    oninput="this.value=this.value.replace(/[^0-9]/g,'')">
-                            </div>
-                            <div class="col-md-12">
-                                <label class="form-label fw-medium  small mb-2">Nama Lengkap Pemohon</label>
-                                <input type="text" name="nama"
-                                    class="form-control search-box-modern py-2.5 bg-white border"
-                                    placeholder="Masukkan nama lengkap pas foto KTP" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-medium  small mb-2">Tempat Lahir</label>
-                                <input type="text" name="tempat_lahir"
-                                    class="form-control search-box-modern py-2.5 bg-white border"
-                                    placeholder="Contoh: Sumenep" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-medium  small mb-2">Tanggal Lahir</label>
-                                <input type="date" name="tanggal_lahir"
-                                    class="form-control date-custom py-2.5 bg-white border" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-medium  small mb-2">Jenis Kelamin</label>
-                                <select name="jenis_kelamin" class="form-control default-select" required>
-                                    <option value="" selected disabled>-- Pilih Jenis Kelamin --</option>
-                                    <option value="L">Laki-Laki</option>
-                                    <option value="P">Perempuan</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-medium  small mb-2">Agama</label>
-                                <select name="agama" class="form-control default-select" required>
-                                    <option value="" selected disabled>Pilih Kepercayaan</option>
-                                    @foreach (['Islam', 'Kristen', 'Katolik', 'Hindu', 'Budha', 'Konghucu'] as $agm)
-                                        <option value="{{ $agm }}">{{ $agm }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-medium  small mb-2">Pekerjaan Utama</label>
-                                <input type="text" name="pekerjaan"
-                                    class="form-control search-box-modern py-2.5 bg-white border"
-                                    placeholder="Contoh: Wiraswasta" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-medium  small mb-2">Nomor HP Aktif</label>
-                                <input type="text" name="no_hp"
-                                    class="form-control search-box-modern py-2.5 bg-white border"
-                                    placeholder="Contoh: 081234xxxxxx"
-                                    oninput="this.value=this.value.replace(/[^0-9]/g,'')">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-medium  small mb-2">Alamat Lingkungan Dusun</label>
-                                <input type="text" name="alamat"
-                                    class="form-control search-box-modern py-2.5 bg-white border"
-                                    placeholder="Contoh: Dusun Timur" required>
-                            </div>
-                            <div class="col-md-3 col-6">
-                                <label class="form-label fw-medium  small mb-2">RT</label>
-                                <input type="text" name="rt"
-                                    class="form-control search-box-modern py-2.5 text-center bg-white border"
-                                    placeholder="000" maxlength="3" required
-                                    oninput="this.value=this.value.replace(/[^0-9]/g,'')">
-                            </div>
-                            <div class="col-md-3 col-6">
-                                <label class="form-label fw-medium  small mb-2">RW</label>
-                                <input type="text" name="rw"
-                                    class="form-control search-box-modern py-2.5 text-center bg-white border"
-                                    placeholder="000" maxlength="3" required
-                                    oninput="this.value=this.value.replace(/[^0-9]/g,'')">
-                            </div>
-                            <div class="col-md-12">
-                                <label class="form-label fw-medium  small mb-2">Status Perkawinan</label>
-                                <select name="status_perkawinan" class="form-control default-select" required>
-                                    <option value="" selected disabled>-- Pilih Status --</option>
-                                    <option value="Belum Menikah">Belum Menikah</option>
-                                    <option value="Menikah">Menikah</option>
-                                    <option value="Cerai Hidup">Cerai Hidup</option>
-                                    <option value="Cerai Mati">Cerai Mati</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer border-0 pt-0 pb-4 px-4 gap-2">
-                        <button type="button"
-                            class="btn btn-light rounded-3 px-4 fw-medium text-secondary flex-grow-1 flex-sm-grow-0"
-                            data-bs-dismiss="modal">Batal</button>
-                        <button type="submit"
-                            class="btn btn-primary rounded-3 px-4 fw-medium flex-grow-1 flex-sm-grow-0">Simpan Log
-                            Penduduk</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+    <!-- Modal Tambah Manual -->
+    @include('admin.master_data.penduduk.modal.tambah')
 
-    {{--  Modal Import Excel  --}}
-    <div class="modal fade" id="modalImport" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 rounded-4 shadow">
-
-                <form action="{{ route('penduduk.import') }}" method="POST" enctype="multipart/form-data">
-
-                    @csrf
-
-                    <div class="modal-header border-0">
-
-                        <h5 class="fw-bold">
-                            Import Data Penduduk
-                        </h5>
-
-                        <button type="button" class="btn-close" data-bs-dismiss="modal">
-                        </button>
-
-                    </div>
-
-                    <div class="modal-body">
-
-                        <div class="alert alert-info">
-
-                            Upload file Excel (.xlsx atau .xls)
-                            yang berisi data penduduk.
-
-                        </div>
-
-                        <div class="mb-3">
-
-                            <label class="form-label">
-
-                                File Excel
-
-                            </label>
-
-                            <input type="file" class="form-control" name="file" accept=".xlsx,.xls" required>
-
-                        </div>
-
-                        <a href="{{ asset('template/template_penduduk.xlsx') }}" class="btn btn-link p-0">
-
-                            Download Template Excel
-
-                        </a>
-
-                    </div>
-
-                    <div class="modal-footer border-0">
-
-                        <button class="btn btn-light" data-bs-dismiss="modal" type="button">
-
-                            Batal
-
-                        </button>
-
-                        <button class="btn btn-success">
-
-                            <i class="bi bi-upload"></i>
-
-                            Import
-
-                        </button>
-
-                    </div>
-
-                </form>
-
-            </div>
-        </div>
-    </div>
+    <!-- Modal Import Berkas Excel -->
+    @include('admin.master_data.penduduk.modal.excel')
 @endsection
+
+@push('styles')
+    <style>
+        .pagination-modern-wrapper .pagination {
+            margin-bottom: 0;
+            gap: 4px;
+        }
+
+        .pagination-modern-wrapper .page-item {
+            margin: 0;
+        }
+
+        .pagination-modern-wrapper .page-link {
+            min-width: 36px;
+            height: 36px;
+            padding: 0 10px;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            border: 1px solid #e5e7eb;
+            border-radius: 8px !important;
+
+            background: #fff;
+            color: #64748b;
+
+            font-size: 0.85rem;
+            font-weight: 500;
+
+            box-shadow: none;
+            transition: all 0.2s ease;
+        }
+
+        .pagination-modern-wrapper .page-link:hover {
+            background: #f8fafc;
+            color: #0d6efd;
+            border-color: #cbd5e1;
+        }
+
+        .pagination-modern-wrapper .page-item.active .page-link {
+            background: #0d6efd;
+            border-color: #0d6efd;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .pagination-modern-wrapper .page-item.disabled .page-link {
+            background: #f8fafc;
+            color: #cbd5e1;
+            border-color: #e5e7eb;
+            cursor: not-allowed;
+        }
+    </style>
+@endpush
